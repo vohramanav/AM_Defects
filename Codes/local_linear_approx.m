@@ -35,7 +35,145 @@ xi  = -1 + 2*lhsdesign(N,m);
 y = -1 + 2 * lhsdesign(M,m);
 
 %pts_x = gen_samples(xi,L,U);
-[lambda,W] = compute_subspace(m,N,M,xi,y);
+
+% Subspace computation and surrogate construction
+Zf = load('Zf.txt');
+
+% Zf1
+f = zeros(N,1); f(:,1) = Zf(:,1);
+[lambda_Zf1,W_Zf1] = compute_subspace(m,N,M,xi,y,f);
+av = W_Zf1(:,1)'*xi';
+Y_surr_Zf1 = get_polyfit_surr(av,f,W_Zf1(:,1),1);
+np = length(av); Y_surr_data_Zf1 = zeros(np,1);
+for i = 1:np
+Y_surr_data_Zf1(i,1) = Y_surr_Zf1(xi(i,:)');
+end
+
+% SSP
+figure(1);
+plot(av,f,'ko','MarkerFaceColor','k');
+hold on
+plot(av,Y_surr_data_Zf1,'--b','LineWidth',2);
+xlabel('$$\mathrm{\hat{\mathbf{W}}_1^{\top}\mathbf{\xi}}$$',...
+'interpreter','latex','fontsize',20);
+ylabel('$$\mathrm{G(\hat{\mathbf{W}}_1^\top\mathbf{\xi})}$$',...
+'interpreter','latex','fontsize',20);
+set(gca,'TickLabelInterpreter','Latex','fontsize', 18);
+box on;
+print -depsc SSP_Zf1.eps
+
+% Activity Scores
+as = zeros(m,1);
+for i = 1:m
+  j=1;
+  as(i) = as(i) + lambda_Zf1(j).*(W_Zf1(i,j).^2);
+end
+as = as./sum(as);
+
+figure(2);
+bar(as);
+xticklabels({'$\mathrm{v}$','$\mathrm{P}$','$\mathrm{T}$','$\mathrm{Y}$','$\mathrm{E}$','$\mathrm{\rho}$',...
+             '$\mathrm{C0_{C_p}}$','$\mathrm{C1_{C_p}}$','$\mathrm{C2_{C_p}}$','$\mathrm{C0_{\kappa}}$',...
+             '$\mathrm{C1_\kappa}$','$\mathrm{C2_\kappa}$'});
+ylabel('$$\mathrm{Activity~Scores~(\tilde{\nu}_{i,r})}$$','interpreter','latex','fontsize',14);
+%ylim([]);
+set(gca,'xtick',1:12,'fontsize',14,'TickLabelInterpreter','latex');
+box on;
+print -depsc as_Zf1.eps
+
+% Zf2
+f = zeros(N,1); f(:,1) = Zf(:,2);
+[lambda_Zf2,W_Zf2] = compute_subspace(m,N,M,xi,y,f);
+av = W_Zf2(:,1)'*xi';
+Y_surr_Zf2 = get_polyfit_surr(av,f,W_Zf2(:,1),1);
+np = length(av); Y_surr_data_Zf2 = zeros(np,1);
+for i = 1:np
+Y_surr_data_Zf2(i,1) = Y_surr_Zf2(xi(i,:)');
+end
+
+% SSP
+figure(3);
+plot(av,f,'ko','MarkerFaceColor','k');
+hold on
+plot(av,Y_surr_data_Zf2,'--b','LineWidth',2);
+xlabel('$$\mathrm{\hat{\mathbf{W}}_1^{\top}\mathbf{\xi}}$$',...
+'interpreter','latex','fontsize',20);
+ylabel('$$\mathrm{G(\hat{\mathbf{W}}_1^\top\mathbf{\xi})}$$',...
+'interpreter','latex','fontsize',20);
+set(gca,'TickLabelInterpreter','Latex','fontsize', 18);
+box on;
+print -depsc SSP_Zf2.eps
+
+% Activity Scores
+as = zeros(m,1);
+for i = 1:m
+  j=1;
+  as(i) = as(i) + lambda_Zf2(j).*(W_Zf2(i,j).^2);
+end
+as = as./sum(as);
+
+figure(4);
+bar(as);
+xticklabels({'$\mathrm{v}$','$\mathrm{P}$','$\mathrm{T}$','$\mathrm{Y}$','$\mathrm{E}$','$\mathrm{\rho}$',...
+             '$\mathrm{C0_{C_p}}$','$\mathrm{C1_{C_p}}$','$\mathrm{C2_{C_p}}$','$\mathrm{C0_{\kappa}}$',...
+             '$\mathrm{C1_\kappa}$','$\mathrm{C2_\kappa}$'});
+ylabel('$$\mathrm{Activity~Scores~(\tilde{\nu}_{i,r})}$$','interpreter','latex','fontsize',14);
+%ylim([]);
+set(gca,'xtick',1:12,'fontsize',14,'TickLabelInterpreter','latex');
+box on;
+print -depsc as_Zf2.eps
+
+
+% Zf3
+f = zeros(N,1); f(:,1) = Zf(:,3);
+[lambda_Zf3,W_Zf3] = compute_subspace(m,N,M,xi,y,f);
+av = W_Zf3(:,1)'*xi';
+Y_surr_Zf3 = get_polyfit_surr(av,f,W_Zf3(:,1),1);
+np = length(av); Y_surr_data_Zf3 = zeros(np,1);
+for i = 1:np
+Y_surr_data_Zf3(i,1) = Y_surr_Zf3(xi(i,:)');
+end
+
+% SSP
+figure(5);
+plot(av,f,'ko','MarkerFaceColor','k');
+hold on
+plot(av,Y_surr_data_Zf3,'--b','LineWidth',2);
+xlabel('$$\mathrm{\hat{\mathbf{W}}_1^{\top}\mathbf{\xi}}$$',...
+'interpreter','latex','fontsize',20);
+ylabel('$$\mathrm{G(\hat{\mathbf{W}}_1^\top\mathbf{\xi})}$$',...
+'interpreter','latex','fontsize',20);
+set(gca,'TickLabelInterpreter','Latex','fontsize', 18);
+box on;
+print -depsc SSP_Zf3.eps
+
+% Activity Scores
+as = zeros(m,1);
+for i = 1:m
+  j=1;
+  as(i) = as(i) + lambda_Zf3(j).*(W_Zf3(i,j).^2);
+end
+as = as./sum(as);
+
+figure(6);
+bar(as);
+xticklabels({'$\mathrm{v}$','$\mathrm{P}$','$\mathrm{T}$','$\mathrm{Y}$','$\mathrm{E}$','$\mathrm{\rho}$',...
+             '$\mathrm{C0_{C_p}}$','$\mathrm{C1_{C_p}}$','$\mathrm{C2_{C_p}}$','$\mathrm{C0_{\kappa}}$',...
+             '$\mathrm{C1_\kappa}$','$\mathrm{C2_\kappa}$'});
+ylabel('$$\mathrm{Activity~Scores~(\tilde{\nu}_{i,r})}$$','interpreter','latex','fontsize',14);
+%ylim([]);
+set(gca,'xtick',1:12,'fontsize',14,'TickLabelInterpreter','latex');
+box on;
+print -depsc as_Zf3.eps
+
+% Test: Generate stress field for a given sample using the surrogate
+
+samp = 20;
+SZf1 = Y_surr_Zf1(xi(samp,:)');
+SZf2 = Y_surr_Zf2(xi(samp,:)');
+SZf3 = Y_surr_Zf3(xi(samp,:)');
+SZF = [SZf1 SZf2 SZf3];
+save('SZF.txt','SZF','-ASCII');
 
 function pts_x = gen_samples(xi,L,U)
 pts_x = zeros(size(xi,1),size(xi,2));
@@ -51,13 +189,7 @@ save('pts_gradfree_N20.txt','pts_x','-ASCII');
 
 end 
 
-function [lambda,W] = compute_subspace(m,N,M,xi,y)
-
-Zf = load('Zf.txt');
-Zf3 = Zf(:,3);
-
-f = zeros(N,1);
-f(:,1) = Zf3(1:N);
+function [lambda,W] = compute_subspace(m,N,M,xi,y,f)
 
 xi_ref = xi;
 y_ref = y;
@@ -153,28 +285,24 @@ eta1 = W(:,1);
 eta2 = W(:,2);
 
 % Eigenvalue Plot
-figure(1);
-semilogy(1:length(lambda),abs(lambda)./lambda(1),'ko','linewidth',2,'MarkerFaceColor','k');
-xlabel('$$\mathrm{Index~(i)}$$','interpreter','latex','fontsize',20);
-ylabel('$$\mathrm{Eigenvalue~(\lambda_i)}$$','interpreter','latex','fontsize',20);
-set(gca,'TickLabelInterpreter','Latex','fontsize', 18);
-%title('comparing dominant eigenvalues');
-box on;
-print -depsc eig_Zf3.eps
+%figure(1);
+%semilogy(1:length(lambda),abs(lambda)./lambda(1),'ko','linewidth',2,'MarkerFaceColor','k');
+%xlabel('$$\mathrm{Index~(i)}$$','interpreter','latex','fontsize',20);
+%ylabel('$$\mathrm{Eigenvalue~(\lambda_i)}$$','interpreter','latex','fontsize',20);
+%set(gca,'TickLabelInterpreter','Latex','fontsize', 18);
+%%title('comparing dominant eigenvalues');
+%box on;
+%print -depsc eig_Zf3.eps
 
 % univariate
 %
-figure(2);
-g1 = eta1'*xi_ref';
-plot(g1,f, 'ko', 'markerfacecolor', 'k')
-set(gca, 'fontsize', 20);
-xlabel('<eta1, x>');
-ylabel('f(x)');
-print -dpng ssp_Zf3.png
 
 end
 
-
+function surr = get_polyfit_surr(y,G,eta,deg)
+p = polyfit(y(:),G,deg);
+surr = @(x)(polyval(p,eta'*x));
+end
 
 
 
