@@ -1,0 +1,267 @@
+\section{The PCAS Method}
+\label{sec:method}
+
+As discussed earlier in Section~\ref{sec:intro}, we aim to construct a surrogate for mapping the set of inputs to a
+field quantity. In the proposed methodology, we outline a two-step process to accomplish this. The first step involves
+dimension reduction in the output space that involves
+identification of principal directions or components in the data set for the field of interest. These components are used
+to construct a feature vector. Each element in the feature vector is an inner product of the field data and elements
+of a given principal direction. Hence, the number of features is equal to the number of principal directions used to
+reconstruct the field. In the second step, each feature is represented as a function of the inputs and a low-dimensional
+representation of the function is computed
+using the active subspace methodology outlined in~\cite{Constantine:2015}. The active subspace predominantly
+captures the variability in each feature due to the variability in the inputs. 
+In this work, we have implemented an iterative strategy for computing the active subspace~\cite{Vohra:2019}. 
+In~\ref{sub:pca}, we outline
+the strategy for computing the feature vector. In~\ref{sub:as}, we provide a brief background on active subspaces
+and outline the sequence of steps for iteratively computing the subspace. 
+
+\subsection{Principal Component Analysis}
+\label{sub:pca}
+
+For the purpose of outlining the computational framework, we consider a field,
+$\mat{S}(\bm{\theta})\in\mathbb{R}^{r\times c}$ evaluated on a 2-dimensional mesh of size $r\times c$;
+and $\theta$ denotes the set of inputs. Consider that the field data is available at $N_s$ pseudorandom
+samples, drawn from the joint probability density function (pdf) of $\bm{\theta}$. A data matrix $\mat{X}$ is
+first constructed using the field data at $N_s$ samples. A singular value decomposition of the covariance
+matrix, $\mat{X^\top X}$ is then performed to obtain an orthogonal matrix, $\mat{U}$ whose columns 
+contain eigenvectors or principal directions in the considered data. A matrix, $\mathcal{Z}$ with 
+rows as feature vectors corresponding to each
+sample is obtained by multiplying the matrices, $\mat{X}$ and $\mat{U}$. The number of features
+are thus equal to the number of components or columns considered in $\mat{U}$. 
+The field, $\mat{S}$ can be re-constructed by multiplying $\mathcal{Z}$ and the transpose of $\mat{U}$
+considering the latter is orthogonal. 
+Since most of the information is captured by the dominant eigenvectors, $\mathcal{S}$ can be re-constructed with a
+reasonable amount of accuracy in a low-dimensional column space of $\mat{U}$. We adopt an iterative
+approach wherein the number of eigenvectors or components of $\mat{U}$ are increased by one at each iteration
+and the accuracy of the reconstructed field, $\hat{\mat S}$ is assessed. Thus, the optimal number of components
+correspond to the re-construction error being smaller than a considered threshold, $\tau$. The sequence of steps
+is outlined in Algorithm~\ref{alg:pca}.
+%
+\bigskip
+\begin{breakablealgorithm}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+  \caption{Determining the optimal number of components, $K^\ast$ for reconstructing $\mat{S}$}
+  \begin{algorithmic}[1]
+  \Require $\tau$, $\mat{S}_i$'s, $\bm{\theta_i}$'s ($i=1,2,\ldots,N_s$)
+  \Ensure $\mat{U}^r$, $K^\ast$
+	\Procedure{Iterative PCA}{} 
+	\State Construct the data matrix, $\mat X$:
+	\State Set $k$ = 0
+	\Loop
+	  \State Reshape $\mat{S}_i\in\mathbb{R}^{r\times c}$ into a vector,
+	  $\vec{S}_{v,i}\in\mathbb{R}^{(r\ast c)\times 1}$
+          \State $k=k+1$
+	  \State $\mat X(k,:)=\vec{S}_{v,i}$
+	  \If {$k=N_s$}
+			\State break
+		\EndIf
+	\EndLoop
+	\State Perform an SVD on the covariance matrix, $\mat{X}^\top \mat{X}$:
+	\Statex \[ \mat{X}^\top \mat{X} = USV^\top \]
+	\State Optimize the number of components, $K$:
+	\State Set $K$ = 1
+	\Loop
+	 \State Compute the feature matrix, $\mat{\mathcal{Z}}$:
+	  \[ \mat{\mathcal{Z}} = \mat{X}\mat{U}(:,1:K) \]
+	  \State Reconstruct the field, $\mat{S}$ as $\hat{\mat{S}}$:
+	  \[ \hat{\mat{S}} = \mat{\mathcal{Z}}\mat{U}(:,1:K)^\top \]
+	  \State Estimate the maximum error, $\varepsilon^\infty$:
+	  \[ \varepsilon^\infty = \max\limits_i \|\mat{S}_i-\hat{\mat{S}}_i\|_\infty,~i=1,2,\ldots,N_s\]
+	   \If {$\varepsilon^\infty < \tau$}
+	                \State $K^\ast = K$
+	                \State $\mat{U}^r = \mat{U}(:,1:K^\ast)$
+			\State break
+		\EndIf
+	\EndLoop
+	\EndProcedure
+  \end{algorithmic}
+  \label{alg:pca}
+\end{breakablealgorithm}
+\bigskip
+%
+
+At the end of the iterative procedure, a feature vector with $K^\ast$ components is is obtained for each $\bm{\theta_i}$.
+Dimension reduction in the output space is this achieved since $K^\ast\ll (r\ast c)$; $(r\ast c)$ is the dimensionality of the
+column space of $\mat{U}$.
+The feature matrix, $\mat{\mathcal{Z}}$ can be mathematically represented as follows:
+
+\be
+\mat{\mathcal{Z}} = 
+\begin{pmatrix}
+\mathcal{Z}_{11} & \mathcal{Z}_{21} & \cdots & \mathcal{Z}_{K^\ast 1} \\
+\mathcal{Z}_{12} & \mathcal{Z}_{22}  & \cdots & \mathcal{Z}_{K^\ast 2} \\
+\vdots & \vdots & \ddots & \vdots \\
+\mathcal{Z}_{1N_s} & \mathcal{Z}_{2N_s} & \cdots & \mathcal{Z}_{K^\ast N_s} 
+\end{pmatrix}
+\label{eq:feature}
+\ee
+%
+The data matrix in the RHS of~\eqref{eq:feature} is used to construct an active subspace for each feature, 
+$\mathcal{Z}_{i}$~($i$~=~$1,2,\ldots,K^\ast$) as discussed in the following section.
+
+\subsection{Active Subspace Discovery}
+\label{sub:as}
+
+A given feature, $\mathcal{Z}_{i}$ = $\mathcal{Z}_{i}(\vec{\theta})$ can be considered as a scalar valued function
+of the set of inputs, $\bm{\theta}$. An active subspace in the present context is a low-dimensional subspace in the input 
+domain that effectively captures the variability in $\mathcal{Z}_{i}$ due to variations in $\bm{\theta}$. 
+The set of inputs, $\bm{\theta}$ in the physical space
+are parameterized as canonical random variables, $\bm{\xi}\in\Omega\in\mathbb{R}^{\Nt}$, where $n_\theta$
+denotes the number of uncertain parameters referred to as the dimensionality of the parameter space. The active
+subspace is spanned by the dominant eigenvectors of a matrix, $\mathbb{C}$ comprising the derivative information
+of $\mathcal{Z}_{i}$ with respect to the components of $\bm{\xi}$. Note that a component $\xi_k$ can be projected back
+to the physical space to its corresponding potential parameter, $\theta_k$. The positive semi-definite matrix,
+ $\mathbb{C}$ for the $i^\text{th}$ feature is given as follows:
+%
+\be
+\mathbb{C}_i = \int_\Omega (\nabla_{\vec{\xi}}\mathcal{Z}_{i})(\nabla_{\vec{\xi}}\mathcal{Z}_{i})^\top dP_\vec\xi, 
+\label{eq:C}
+\ee
+%
+where $dP_\vec\xi$ = $\pi_\vec\xi d\vec\xi$  and $\pi_\vec\xi$ denotes the joint pdf of $\bm{\xi}$. Note that
+$\mathcal{Z}_{i}$ is assumed to be differentiable and L$^2$ integrable in $\Omega_\theta$. 
+Since the integral in~\eqref{eq:C}
+is multidimensional, the symmetric and positive semidefinite matrix $\mathbb{C}_i$ is approximated numerically in 
+practice. Consider its sampling based estimate and associated eigenvalue decomposition as follows:
+%
+ \be
+ \mathbb{C}_i\approx \hat{\mathbb{C}}_i = \frac{1}{N}\sum\limits_{l=1}^{N} 
+ (\nabla_{\vec{\xi}}\mathcal{Z}_{i}(\vec{\xi}_l))(\nabla_{\vec{\xi}}\mathcal{Z}_{i}(\vec{\xi}_l))^\top
+ = \hat{\mat{W}}\hat{\mat{\Lambda}}\hat{\mat{W}}^\top.
+\label{eq:chat}
+ \ee
+ %
+ The matrix $\hat{\mat{W}}$ comprises orthonormal eigenvectors as its columns, and $\hat{\mat{\Lambda}}$
+ is a diagonal matrix with eigenvalues arranged in descending order as its elements:
+ \[
+     \lambda_1 \geq \lambda_2 \geq \cdots \geq \lambda_\Nt \geq 0.
+\] 
+Dimension reduction is achieved by partitioning the eigenpairs about the $j^{\text{th}}$ eigenvalue
+such that  \scalebox{1.25}{$\left(\frac{\lambda_j}{\lambda_{j+1}}\right)$}$\gg 1$ as follows:
+\be
+ \hat{\mat{W}} = [\hat{\mat{W}}_1~\hat{\mat{W}}_2],~~\hat{\mat{\Lambda}} = \begin{bmatrix}\hat{\mat{\Lambda}}_1 & \\  &
+  \hat{\mat{\Lambda}}_2. 
+\end{bmatrix}
+\ee
+%
+The column space of $\hat{\mat{W}}_1$ constitutes the active subspace, and $\hat{\mat{\Lambda}}_1$ is the 
+corresponding diagonal matrix with its elements: $\{\lambda_1,\ldots,\lambda_\nj\}$, where $\nj$ is the number
+of columns or eigenvectors in $\hat{\mat{W}}_1$. $\mathcal{Z}_{i}$,
+a function of $\Nt$ independent variables is transformed as $G(\bm{\eta})$, a function of $j$ independent
+variables since $\bm{\eta}=\hat{\mat{W}}_1^\top \bm{\xi}\in\mathbb{R}^\nj$. The components of $\bm{\eta}$
+are referred to as \textit{active variables}.
+From~\eqref{eq:chat}, it is clear that the computational effort needed to construct $\mathbb{C}_i$ is directly proportional 
+to the number of samples, $N$. To avoid unnecessary computations, we adopted an iterative strategy
+presented in~\cite{Vohra:2019} to estimate $\mathbb{C}_i$. A regression-based approach outlined
+in~\cite{Constantine:2015} and~\cite{Vohra:2019} was used to estimate the gradients of $\mathcal{Z}_{i}$,
+required to compute the elements of $\mathbb{C}_i$.
+
+\subsubsection{Surrogate in the Active subspace}
+\label{sub:surr}
+
+Significant computational gains are expected in situations where a low-dimensional active subspace captures the
+variability in the output with reasonable accuracy. However, gains can be increased further by constructing a 
+surrogate ($\hat{G}(\bm{\eta})$) for the variability ($G(\bm{\eta})$) in the subspace. If the surrogate is 1-2 dimensional,
+a polynomial regression fit would be appropriate. However, for a relatively large dimensional surrogate, one could
+use a PCE or a GP. It is critical to validate the surrogate for its predictive accuracy and assess surrogate 
+error~($\varepsilon^s$). 
+The following algorithm provides a sequence of steps adapted from~\cite{Constantine:2015} to construct a
+surrogate in the active subspace.
+%
+\begin{breakablealgorithm}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+  \caption{For constructing a surrogate model in the active subspace}
+  \begin{algorithmic}[1]
+	\Procedure{Surrogate Model, $\hat{G}(\bm{\eta})$}{} 
+	  \State Consider $N$ available data points in the full space, $(\vec\xi_k,\mathcal{Z}_i(\vec\xi_k))$, $k~=~1,\ldots,N$
+	  \State For each $\vec\xi_k$, compute $\vec\eta_k$ = $\mat{W}_1^\top\vec\xi_k$ 
+          (Note: $G(\vec{\eta}_k)$ $\approx$ $\mathcal{Z}_i(\vec{\xi}_k)$)
+	  \State Fit a regression surface, $\hat{G}(\bm{\eta})$ to approximate $G(\bm{\eta})$ using the data
+                 points, $(\vec\xi_k,G(\vec\eta_k))$
+	  \State Note that the overall approximation is: $\mathcal{Z}_i(\vec{\xi})$ $\approx$
+                 $\hat{G}(\mat{W}_1^\top\vec{\xi})$ 
+	\EndProcedure
+  \end{algorithmic}
+  \label{alg:surr}
+\end{breakablealgorithm} 
+%
+
+To sum up, an active subspace is computed for each dominant feature, $\mathcal{Z}_i$ and a corresponding
+surrogate fit, $\hat{\mathcal{Z}}_i$ is performed. Therefore, a total of $K^\ast$ surrogates are constructed
+to map the set of inputs $\bm{\theta}$ in the physical space to the field in the output space. The overall dimension
+reduction accomplished using the proposed methodology is $\mathbb{R}^{(r\ast c)}\rightarrow \mathbb{R}^{N_{\bm{\eta},
+\max}}$; where $N_{\bm{\eta},\max}$ is the maximum number of active variables, $\bm{\eta}$ required to construct
+a given $\hat{G}_i$. A overall flow diagram for the proposed methodology is provided in Figure~\ref{fig:fd}.
+%
+\begin{figure}[htbp]
+\begin{center}
+\begin{tikzpicture}[node distance=1.2cm,scale=0.6, every node/.style={scale=1.0}]
+
+\node (field) [io, text width=6em] {Field Data\\ $\mat{S}\in\mathbb{R}^N$};
+
+\node (pca) [process, right of=field, text width=15em, xshift=7.5cm] {Optimal number of features: \\ 
+$\mathcal{Z}_i$, $i=1,\ldots,K^\ast$\\
+DR: $\mathbb{R}^{N}\rightarrow \mathbb{R}^{K^\ast},~K^\ast\ll N$};
+
+\draw [arrow] (field) -- node[above] {Principal Component} node [below] {Analysis} (pca);
+
+\node (zk) [process, below of=pca, text width=8em, yshift=-3.0cm] {$\mathcal{Z}_i=\mathcal{Z}_i(\bm{\theta})$\\
+$\bm{\theta}\in\mathbb{R}^{\Nt}$};
+
+\draw [arrow] (pca) -- (zk);
+
+\node (as) [io, below of=field, text width=14em, yshift=-3.0cm]{$\mathcal{Z}_i(\bm{\theta})\approx 
+G(\bm{\eta}=\bm{\theta}^\top \bm{W_1})$\\ 
+$G(\bm{\eta})\approx \hat{G}(\bm{\eta})$, $\eta\in\mathbb{R}^{N_\eta}$\\
+DR: $\mathbb{R}^{\Nt}\rightarrow \mathbb{R}^{N_\eta}$, $N_\eta\ll \Nt$};
+
+\draw [arrow] (zk) -- node [above] {Active Subspace} node [below] {Computation} (as);
+
+\draw [arrow,dashed] (as) -- (field);
+
+\end{tikzpicture}
+\end{center}
+\caption{Flow diagram illustrating the sequence of steps and associated dimension reduction (DR) in the PCAS method.}
+\label{fig:fd}
+\end{figure}
+%
+Once a surrogate for each feature is built, the field of interest can be reconstructed as shown in Figure~\ref{fig:re}.
+%
+%
+\begin{figure}[htbp]
+\begin{center}
+\begin{tikzpicture}[node distance=1.2cm,scale=0.6, every node/.style={scale=1.0}]
+
+\node (s1) [io, text width=7.5em] {Draw a sample, $\bm{\xi}_k$ from $\pi_\xi$};
+
+\node (s2) [process, right of=s1, text width=8em, xshift=3.0cm] {Compute $\hat{G}_i(\bm{\xi}_k)$\\ $i=1,2,\ldots,K^\ast$};
+
+\draw [arrow] (s1) -- (s2);
+
+\node (s3) [process, right of=s2, text width=9em, xshift=3.0cm] {$\mathcal{Z}_i(\bm{\xi}_k)=\hat{G}_i(\bm{\xi}_k)+
+\varepsilon^s$};
+
+\draw [arrow] (s2) -- (s3);
+
+\node (s4) [process, right of=s3, text width=7em, xshift=2.8cm] {Compute $\hat{\mat{S}}(\mathcal{Z}_i)$};
+
+\draw [arrow] (s3) -- (s4);
+
+\end{tikzpicture}
+\end{center}
+\caption{Flow diagram illustrating the sequence of steps for reconstructing the field of interest.}
+\label{fig:re}
+\end{figure}
+
+
+
+
+
+
+
+
+
+
