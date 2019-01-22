@@ -263,8 +263,7 @@ color(3cm)=(LightSlateGrey!15)
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-\title[AM Defects: PCAS Method]{\textbf{A Fast Supervised Learning Method for
-High-Dimensional Problems}}
+\title[AM Defects: PCAS Method]{\textbf{Fast Surrogate Modeling for High-Dimensional Problems}}
 \thispagestyle{empty}
 \pgfsetfillopacity{0.9}
 \setbeamercolor{title}{bg=DeepSkyBlue4,fg=white}
@@ -307,7 +306,7 @@ High-Dimensional Problems}}
 
 \node (field) [io, text width=6em] {Field Data\\ $\mathcal{S}\in\mathbb{R}^N$};
 
-\node (pca) [process, right of=field, text width=14em, xshift=6.0cm] {Optimal $\#$ of features\\ $z_k$, $k=1,\ldots,K$\\
+\node (pca) [process, right of=field, text width=14em, xshift=6.5cm] {Optimal $\#$ of features\\ $z_k$, $k=1,\ldots,K$\\
 $\mathbb{R}^{N}\rightarrow \mathbb{R}^{K},~K\ll N$};
 
 \draw [arrow] (field) -- node[anchor=south] {PCA} (pca);
@@ -322,7 +321,7 @@ $\bm{\theta}$ = $\{\bm{\theta_p},\bm{\theta_m}\}\in\mathbb{R}^{N_m+N_p}$};
 \bm{\theta}^\top \bm{W_1}$\\ $\mathbb{R}^{N_m+N_p}\rightarrow \mathbb{R}^{N_\eta}$\\
 $(N_m+N_p)\ll N_\eta$\vspace{0.5mm}};
 
-\draw [arrow] (zk) -- node [above] {Subspace} node [below] {Computation} (as);
+\draw [arrow] (zk) -- node [above] {Active Subspace} node [below] {Computation} (as);
 
 \draw [arrow,dashed] (as) -- (field);
 
@@ -361,6 +360,17 @@ Q = f(z,P)\exp(f(x,y,v)) \nonumber
 \end{center}
 
 Stress Calculation:
+\vspace{-2mm}
+\be
+\sigma = \mathbf{C}\epsilon \nonumber
+\ee
+\vspace{-7mm}
+\be
+\epsilon = \epsilon_t + \epsilon_p + \epsilon_e \nonumber
+\ee
+\begin{center}
+\scriptsize{$\epsilon_t$: Thermal strain, $\epsilon_p$: Plastic strain\\ $\epsilon_t$: Elastic strain}
+\end{center}
 
 
 \end{column}
@@ -388,7 +398,7 @@ Stress Calculation:
 Principal Component Analysis
 
 \begin{figure}[htbp]
-\includegraphics[width=0.65\textwidth]{./Figures/error_k}
+\includegraphics[width=0.65\textwidth]{./Figures/error_PCA}
 \end{figure}
 
 \rowcolors{2}{black!20}{white}
@@ -411,14 +421,19 @@ Principal Component Analysis
 \end{column}
 
 \begin{column}{0.5\textwidth}
+\vspace{-21mm}
+\begin{center}
+von Mises Stress
+
 \begin{figure}[htbp]
-\includegraphics[width=0.95\textwidth]{./Figures/origZ_sam20}
+\includegraphics[width=0.95\textwidth]{./Figures/origZ_sam13}
 \end{figure}
-\vspace{-15mm}
+\vspace{-5mm}
 \begin{figure}[htbp]
-\includegraphics[width=0.95\textwidth]{./Figures/recZ_sam20}
-\\ \vspace{-10mm} \scriptsize{$\mathbb{R}^{32\times 14}\rightarrow\mathbb{R}^3(K=3)$}
+\includegraphics[width=0.95\textwidth]{./Figures/recZ_sam13}
+\\ \scriptsize{$\mathbb{R}^{32\times 14}\rightarrow\mathbb{R}^7(K=7)$}
 \end{figure}
+\end{center}
 \end{column}
 \end{columns}
 
@@ -428,62 +443,192 @@ Principal Component Analysis
 
 \begin{frame}{Active Subspace Discovery}
 
+\centering Eigenvalue Spectrum and SSPs
+
 \begin{columns}
-\begin{column}{0.33\textwidth}
+\begin{column}{0.25\textwidth}
 \begin{figure}[htbp]
 \includegraphics[width=0.95\textwidth]{./Figures/eig_Zf1}\\
 \includegraphics[width=0.95\textwidth]{./Figures/SSP_Zf1}
 \end{figure}
 \end{column}
 
-\begin{column}{0.33\textwidth}
+\begin{column}{0.25\textwidth}
 \begin{figure}[htbp]
 \includegraphics[width=0.95\textwidth]{./Figures/eig_Zf2}\\
 \includegraphics[width=0.95\textwidth]{./Figures/SSP_Zf2}
 \end{figure}
 \end{column}
 
-\begin{column}{0.33\textwidth}
+\begin{column}{0.25\textwidth}
 \begin{figure}[htbp]
 \includegraphics[width=0.95\textwidth]{./Figures/eig_Zf3}\\
 \includegraphics[width=0.95\textwidth]{./Figures/SSP_Zf3}
 \end{figure}
 \end{column}
+
+\begin{column}{0.25\textwidth}
+\begin{figure}[htbp]
+\includegraphics[width=0.95\textwidth]{./Figures/eig_Zf4}\\
+\includegraphics[width=0.95\textwidth]{./Figures/SSP2D_Zf4}
+\end{figure}
+\end{column}
+
 \end{columns}
 
 \end{frame}
 
 %___________________________NEW SLIDE______________________________________
 
-\begin{frame}{GSA: Activity Scores}
+\begin{frame}{Active Subspace Discovery}
 
-\begin{shaded}
-%\vspace{-5mm}
-\scriptsize
-\centering
-\be
-\nu_{i,r}(f) = \sum\limits_{j=1}^{r} \lambda_j w_{i,j}^2, i=1,\ldots,N_p \nonumber
-\ee
-%\vspace{-7mm}
-\end{shaded}
+\centering Eigenvalue Spectrum and SSPs
 
 \begin{columns}
-\begin{column}{0.33\textwidth}
+\begin{column}{0.25\textwidth}
 \begin{figure}[htbp]
-\includegraphics[width=0.95\textwidth]{./Figures/as_Zf1}\\
+\includegraphics[width=0.95\textwidth]{./Figures/eig_Zf5}\\
+\includegraphics[width=0.95\textwidth]{./Figures/SSP_Zf5}
 \end{figure}
 \end{column}
 
-\begin{column}{0.33\textwidth}
+\begin{column}{0.25\textwidth}
 \begin{figure}[htbp]
-\includegraphics[width=0.95\textwidth]{./Figures/as_Zf2}\\
+\includegraphics[width=0.95\textwidth]{./Figures/eig_Zf6}\\
+\includegraphics[width=0.95\textwidth]{./Figures/SSP_Zf6}
 \end{figure}
 \end{column}
 
-\begin{column}{0.33\textwidth}
+\begin{column}{0.25\textwidth}
 \begin{figure}[htbp]
-\includegraphics[width=0.95\textwidth]{./Figures/as_Zf3}\\
+\includegraphics[width=0.95\textwidth]{./Figures/eig_Zf7}\\
+\includegraphics[width=0.95\textwidth]{./Figures/SSP_Zf7}
 \end{figure}
+\end{column}
+
+\end{columns}
+
+\end{frame}
+
+%___________________________NEW SLIDE______________________________________
+
+\begin{frame}{Surrogate-based GSA}
+
+\begin{columns}
+\begin{column}{0.5\textwidth}
+\begin{center}
+\begin{figure}[htbp]
+\includegraphics[width=0.85\textwidth]{./Figures/sobol}
+\end{figure}
+\end{center}
+\end{column}
+
+\hspace{3mm}
+
+\begin{column}{0.5\textwidth}
+\begin{center}
+\begin{figure}[htbp]
+\includegraphics[width=0.85\textwidth]{./Figures/kde_Smax}
+\end{figure}
+\end{center}
+\end{column}
+\end{columns}
+
+
+\end{frame}
+
+%___________________________NEW SLIDE______________________________________
+
+\begin{frame}{Verification $\&$ Validation}
+
+\begin{columns}
+\begin{column}{0.5\textwidth}
+\hspace{-3mm}
+\begin{shaded}
+\vspace{-5mm}
+\scriptsize
+\centering
+\begin{align*}
+\varepsilon_{\text{L$^2$}}^{\text{ver}} &= \frac{1}{N}\sum\limits_{i=1}^{N_\text{ver}} \frac{\|S-\hat{S}\|_2}{\|S\|_2} \\
+                                             &\approx 0.04
+\end{align*}
+\vspace{-5mm}
+\end{shaded}
+\end{column}
+
+\hspace{3mm}
+
+\begin{column}{0.5\textwidth}
+\begin{shaded}
+\vspace{-5mm}
+\scriptsize
+\centering
+\begin{align*}
+\varepsilon_{\text{L$^2$}}^{\text{val}} &= \frac{1}{N}\sum\limits_{i=1}^{N_\text{val}} \frac{\|S-\hat{S}\|_2}{\|S\|_2} \\
+                                             &\approx 0.07
+\end{align*}
+\vspace{-5mm}
+\end{shaded}
+\end{column}
+\end{columns}
+
+\begin{center}
+\scriptsize
+$S$: Model Prediction,~$\hat{S}$: Surrogate Prediction
+\end{center}
+
+\end{frame}
+
+%___________________________NEW SLIDE______________________________________
+
+\begin{frame}{Hotspot Detection}
+
+\begin{columns}
+\begin{column}{0.5\textwidth}
+\begin{center}
+\begin{figure}[htbp]
+\includegraphics[width=0.95\textwidth]{./Figures/hotspots1} \\ \vspace{3mm}
+\includegraphics[width=0.95\textwidth]{./Figures/hotspots20}
+\end{figure}
+\end{center}
+\end{column}
+\hspace{-5mm}
+\begin{column}{0.5\textwidth}
+\begin{center}
+\begin{figure}[htbp]
+\includegraphics[width=0.85\textwidth]{./Figures/kde_Smax}
+\end{figure}
+\end{center}
+\end{column}
+\end{columns}
+
+\begin{center}
+\scriptsize
+Hotspot: $S>0.75\times S_{\max,\text{MLE}}$
+\end{center}
+
+\end{frame}
+
+%___________________________NEW SLIDE______________________________________
+
+\begin{frame}{Reliability Prediction}
+
+\begin{columns}
+\begin{column}{0.5\textwidth}
+\begin{center}
+\begin{figure}[htbp]
+\includegraphics[width=0.95\textwidth]{./Figures/hotspots1} \\ \vspace{3mm}
+\includegraphics[width=0.95\textwidth]{./Figures/hotspots20}
+\end{figure}
+\end{center}
+\end{column}
+\hspace{-5mm}
+\begin{column}{0.5\textwidth}
+\begin{center}
+\begin{figure}[htbp]
+\includegraphics[width=0.85\textwidth]{./Figures/kde_Slocs}
+\end{figure}
+\end{center}
 \end{column}
 \end{columns}
 
