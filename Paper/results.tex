@@ -11,6 +11,21 @@ in~\ref{sub:reliability}.
 \subsection{Surrogate Model}
 \label{sub:surr}
 
+A surrogate model is constructed for the residual stress field at the cross-section of the part 
+(x-z plane in Figure~\ref{fig:PartwMesh}) passing through its center. The surrogate maps three sets of
+parameters, namely, the process control parameters~($\bm{\theta_p}$), mechanical properties~($\bm{\theta_m}$),
+and thermal properties~($\bm{\theta_t}$) to the stress field. The set of process control parameters includes
+the beam power~($P$), scan speed~($v$), and the pre-heat temperature~($T_0$). Mechanical properties
+include the yield strength~($Y$), the elastic modulus~($E$), and the bulk density~($\rho$). Thermal 
+properties include specific heat~($C_p$) and bulk thermal conductivity~($\kappa$). Note that $C_p$ and $\kappa$
+are considered to be functions of the local temperature, $T$.
+
+
+
+%The first step in the PCAS
+%method involves dimension reduction in the output space using principal component analysis. 
+
+
 
 \subsection{Global Sensitivity Analysis}
 \label{sub:gsa}
