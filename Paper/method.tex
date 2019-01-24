@@ -35,7 +35,8 @@ Since most of the information is captured by the dominant eigenvectors, $\mathca
 reasonable amount of accuracy in a low-dimensional column space of $\mat{U}$. We adopt an iterative
 approach wherein the number of eigenvectors or components of $\mat{U}$ are increased by one at each iteration
 and the accuracy of the reconstructed field, $\hat{\mat S}$ is assessed. Thus, the optimal number of components
-correspond to the re-construction error being smaller than a considered threshold, $\tau$. The sequence of steps
+correspond to the reconstruction error~($\varepsilon_\mathcal{R}^\infty$) 
+being smaller than a considered threshold, $\tau$. The sequence of steps
 is outlined in Algorithm~\ref{alg:pca}.
 %
 \bigskip
@@ -67,8 +68,8 @@ is outlined in Algorithm~\ref{alg:pca}.
 	  \[ \mat{\mathcal{Z}} = \mat{X}\mat{U}(:,1:K) \]
 	  \State Reconstruct the field, $\mat{S}$ as $\hat{\mat{S}}$:
 	  \[ \hat{\mat{S}} = \mat{\mathcal{Z}}\mat{U}(:,1:K)^\top \]
-	  \State Estimate the maximum error, $\varepsilon^\infty$:
-	  \[ \varepsilon^\infty = \max\limits_i \|\mat{S}_i-\hat{\mat{S}}_i\|_\infty,~i=1,2,\ldots,N_s\]
+	  \State Estimate the maximum error, $\varepsilon_\mathcal{R}^\infty$:
+	  \[ \varepsilon_\mathcal{R}^\infty = \max\limits_i \|\mat{S}_i-\hat{\mat{S}}_i\|_\infty,~i=1,2,\ldots,N_s\]
 	   \If {$\varepsilon^\infty < \tau$}
 	                \State $K^\ast = K$
 	                \State $\mat{U}^r = \mat{U}(:,1:K^\ast)$
@@ -165,8 +166,7 @@ Significant computational gains are expected in situations where a low-dimension
 variability in the output with reasonable accuracy. However, gains can be increased further by constructing a 
 surrogate ($\hat{G}(\bm{\eta})$) for the variability ($G(\bm{\eta})$) in the subspace. If the surrogate is 1-2 dimensional,
 a polynomial regression fit would be appropriate. However, for a relatively large dimensional surrogate, one could
-use a PCE or a GP. It is critical to validate the surrogate for its predictive accuracy and assess surrogate 
-error~($\varepsilon^s$). 
+use a PCE or a GP. It is critical to validate the surrogate for its predictive accuracy. 
 The following algorithm provides a sequence of steps adapted from~\cite{Constantine:2015} to construct a
 surrogate in the active subspace.
 %
@@ -241,8 +241,7 @@ Once a surrogate for each feature is built, the field of interest can be reconst
 
 \draw [arrow] (s1) -- (s2);
 
-\node (s3) [process, right of=s2, text width=9em, xshift=3.0cm] {$\mathcal{Z}_i(\bm{\xi}_k)=\hat{G}_i(\bm{\xi}_k)+
-\varepsilon^s$};
+\node (s3) [process, right of=s2, text width=9em, xshift=3.0cm] {$\mathcal{Z}_i(\bm{\xi}_k)\approx\hat{G}_i(\bm{\xi}_k)$};
 
 \draw [arrow] (s2) -- (s3);
 
