@@ -266,6 +266,73 @@ Matlab. The distribution is based on 10$^6$ evaluations and the mode value is es
 \subsection{Reliability Prediction}
 \label{sub:reliability}
 
+Reliability prediction involves estimating the probability of failure~($p_f$) of an AM part
+in the present scenario. We estimate~$p_f$ based on the stress estimate at any location in
+the part exceeding a given threshold. In other words, we aim to ensure that the residual stress
+in the part does not exceed an upper bound and therefore, the performance characteristics of
+the AM part are not severely degraded. Once again, we exploit the composite surrogate to
+numerically estimate~$p_f$ as follows:
+%
+\be
+\hat{p}_f = \frac{1}{N}\sum\limits_{k=1}^{N} \mathbb{H}\left[S^\ast-\max(\hat{\mat{S}})\right],
+\ee
+\label{eq:pf}
+%
+where $\hat{p}_f$ is the approximation to $p_f$, $N$ denotes the number of samples, $S^\ast$
+denotes the limiting stress value, and $\max(\hat{\mat{S}})$ denotes the peak stress in the
+x$^c$-z$^c$ plane based on the surrogate prediction. $\mathbb{H}[]$
+is a heaviside unit step function that assumes a value 1 for a positive argument and 0 for
+a negative argument.
+To ensure that $\hat{p}_f$ is a resonable approximation, it is estimated
+using 10$^6$ samples in the input domain. Based on our calculations, the probability of 
+failure using $S^\ast$~=~900~MPa was estimated to be 0.177. 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
