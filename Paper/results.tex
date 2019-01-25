@@ -188,7 +188,8 @@ accurate surrogate coupled with enormous computational gains which makes the ana
 the present application in this work, feasible. 
 
 Figure~\ref{fig:RS_comp} illustrates a side-by-side comparison of stress distribution in the $x^c$-z$^c$ plane,
-computed using the FEM~(left) with those generated using the composite surrogate~(right). The two plots
+computed using the FEM~(left) with those generated using the composite surrogate~(right) using the same
+set of input conditions. The two plots
 are observed to be in close agreement with each other.  
 %
 \begin{figure}[htbp]
@@ -208,17 +209,58 @@ are observed to be in close agreement with each other.
 \end{center}
 \caption{Left: Residual stress field in the $x^c$-z$^c$ plane as generated using the Abaqus model with inputs, 
 $\bm{\theta}_p$. The grid points in the 2D mesh used for finite element simulations are also highlighted. 
-Right: Reconstructed stress field using the surrogate model for the same set of inputs.}
+Right: Reconstructed stress field using the surrogate model using: $v=535.23$~mm/s, $P$=148.27~W,
+$T_0$=641.03~K, $Y$=777.74~MPa, $E$=99.16~GPa, $\rho$=4187.25~kg/m$^3$, $C_0$=546.43, $C_1$=0.47,
+$C_2$~=~-~3.07$\times$10$^{-5}$, $D_0$=6.84, $D_1$=0.01, $D_2$=1.47$\times$10$^{-6}$.}
 \label{fig:RS_comp}
 \end{figure}
 
 \subsubsection{Hotspot Detection}
 \label{subsub:hotspot}
 
+As mentioned earlier in Section~\ref{sec:intro}, a large amount of residual stress severely impacts part
+performance due to sub-optimal mechanical properties, reduced fatigue life, and geometrical inaccuracy. 
+Detection of stress hotspots could thus be conceived as an important step in the manufacturing process.
+Owing to the trasient nature of the process conditions, material microstructure, and part configuration,
+it would not be practicable to use the FEM. The composite surrogate could instead be used for the purpose
+of hotspot detection in the part. 
+
+For the present analysis, we focus on the hotspots in the $x^c$-z$^c$ plane, and any point in the 2D mesh
+where the stress exceeds a threshold is considered as the hotspot. Figure~\ref{fig:hs} illustrates the 
+location of the hotspots and associated stress values in the $x^c$-z$^c$ plane, for a particular set of
+input conditions. A threshold value of 640~MPa was used. 
+%
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=0.42\textwidth]{./Figures/loc_hotspot10}
+\end{center}
+\caption{Location of the hotspots in the AM part and corresponding estimates of the von Mises stress
+are indicated by means of a colorbar. The location of the peak stress is also shown using a black square.}
+\label{fig:hs}
+\end{figure}
+%
+As expected, the hotspots are located near the top surface of the part that experiences sharp temperature
+gradients. 
 
 \subsection{Global Sensitivity Analysis}
 \label{sub:gsa}
 
+The composite surrogate was used for the purpose of global sensitivity analysis~(GSA). The residual stress
+field in the $x^c$-z$^c$ plane was simulated for 10$^6$ pseudorandom samples, generating using LHS
+in the 12-dimensional input domain. Thus, stress distribution is obtained at each point in the mesh. 
+The specific grid point with the maximum mean stress is regarded as the \textit{point of interest},
+denoted as P. Our findings revealed that P is infact located at the top right corner of the $x^c$-z$^c$
+plane, consistent with the location of the square in Figure~\ref{fig:hs}.
+Figure~\ref{fig:kde_S} shows the stress distribution at P. 
+%
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=0.42\textwidth]{./Figures/kde_S_mumax}
+\end{center}
+\caption{}
+\label{fig:kde_S}
+\end{figure}
+%
 
 \subsection{Reliability Prediction}
 \label{sub:reliability}
