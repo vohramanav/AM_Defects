@@ -11,17 +11,16 @@ reconstruct the field. In the second step, each feature is represented as a func
 representation of the function is computed
 using the active subspace methodology outlined in~\cite{Constantine:2015}. The active subspace predominantly
 captures the variability in each feature due to the variability in the inputs. 
-In this work, we have implemented an iterative strategy for computing the active subspace~\cite{Vohra:2019}. 
 In~\ref{sub:pca}, we outline
 the strategy for computing the feature vector. In~\ref{sub:as}, we provide a brief background on active subspaces
-and outline the sequence of steps for iteratively computing the subspace. 
+and outline the sequence of steps for surrogate construction for each feature. 
 
 \subsection{Principal Component Analysis}
 \label{sub:pca}
 
 For the purpose of outlining the computational framework, we consider a field,
 $\mat{S}(\bm{\theta})\in\mathbb{R}^{r\times c}$ evaluated on a 2-dimensional mesh of size $r\times c$;
-and $\theta$ denotes the set of inputs. Consider that the field data is available at $N_s$ pseudorandom
+and $\bm{\theta}$ denotes the set of inputs. Consider that the field data is available at $N_s$ pseudorandom
 samples, drawn from the joint probability density function (pdf) of $\bm{\theta}$. A data matrix $\mat{X}$ is
 first constructed using the field data at $N_s$ samples. A singular value decomposition of the covariance
 matrix, $\mat{X^\top X}$ is then performed to obtain an orthogonal matrix, $\mat{U}$ whose columns 
@@ -29,9 +28,9 @@ contain eigenvectors or principal directions in the considered data. A matrix, $
 rows as feature vectors corresponding to each
 sample is obtained by multiplying the matrices, $\mat{X}$ and $\mat{U}$. The number of features
 are thus equal to the number of components or columns considered in $\mat{U}$. 
-The field, $\mat{S}$ can be re-constructed by multiplying $\mathcal{Z}$ and the transpose of $\mat{U}$
+The field $\mat{S}$ can be reconstructed by multiplying $\mathcal{Z}$ and the transpose of $\mat{U}$
 considering the latter is orthogonal. 
-Since most of the information is captured by the dominant eigenvectors, $\mathcal{S}$ can be re-constructed with a
+Since most of the information is captured by the dominant eigenvectors, $\mat{S}$ can be re-constructed with a
 reasonable amount of accuracy in a low-dimensional column space of $\mat{U}$. We adopt an iterative
 approach wherein the number of eigenvectors or components of $\mat{U}$ are increased by one at each iteration
 and the accuracy of the reconstructed field, $\hat{\mat S}$ is assessed. Thus, the optimal number of components
@@ -84,8 +83,8 @@ is outlined in Algorithm~\ref{alg:pca}.
 %
 
 At the end of the iterative procedure, a feature vector with $K^\ast$ components is is obtained for each $\bm{\theta_i}$.
-Dimension reduction in the output space is this achieved since $K^\ast\ll (r\ast c)$; $(r\ast c)$ is the dimensionality of the
-column space of $\mat{U}$.
+Dimension reduction in the output space is thus achieved since $K^\ast\ll (r\ast c)$, where $(r\ast c)$ is the 
+dimensionality of the column space of $\mat{U}$.
 The feature matrix, $\mat{\mathcal{Z}}$ can be mathematically represented as follows:
 
 \be
@@ -109,7 +108,7 @@ A given feature, $\mathcal{Z}_{i}$ = $\mathcal{Z}_{i}(\vec{\theta})$ can be cons
 of the set of inputs, $\bm{\theta}$. An active subspace in the present context is a low-dimensional subspace in the input 
 domain that effectively captures the variability in $\mathcal{Z}_{i}$ due to variations in $\bm{\theta}$. 
 The set of inputs, $\bm{\theta}$ in the physical space
-are parameterized as canonical random variables, $\bm{\xi}\in\Omega\in\mathbb{R}^{\Nt}$, where $n_\theta$
+are parameterized as canonical random variables, $\bm{\xi}\in\Omega\in\mathbb{R}^{\Nt}$, where $N_\theta$
 denotes the number of uncertain parameters referred to as the dimensionality of the parameter space. The active
 subspace is spanned by the dominant eigenvectors of a matrix, $\mathbb{C}$ comprising the derivative information
 of $\mathcal{Z}_{i}$ with respect to the components of $\bm{\xi}$. Note that a component $\xi_k$ can be projected back
@@ -148,15 +147,14 @@ such that  \scalebox{1.25}{$\left(\frac{\lambda_j}{\lambda_{j+1}}\right)$}$\gg 1
 \ee
 %
 The column space of $\hat{\mat{W}}_1$ constitutes the active subspace, and $\hat{\mat{\Lambda}}_1$ is the 
-corresponding diagonal matrix with its elements: $\{\lambda_1,\ldots,\lambda_\nj\}$, where $\nj$ is the number
+corresponding diagonal matrix with its elements: $\{\lambda_1,\ldots,\lambda_\Nj\}$, where $\Nj$ is the number
 of columns or eigenvectors in $\hat{\mat{W}}_1$. $\mathcal{Z}_{i}$,
 a function of $\Nt$ independent variables is transformed as $G(\bm{\eta})$, a function of $j$ independent
-variables since $\bm{\eta}=\hat{\mat{W}}_1^\top \bm{\xi}\in\mathbb{R}^\nj$. The components of $\bm{\eta}$
+variables since $\bm{\eta}=\hat{\mat{W}}_1^\top \bm{\xi}\in\mathbb{R}^\Nj$. The components of $\bm{\eta}$
 are referred to as \textit{active variables}.
 From~\eqref{eq:chat}, it is clear that the computational effort needed to construct $\mathbb{C}_i$ is directly proportional 
-to the number of samples, $N$. To avoid unnecessary computations, we adopted an iterative strategy
-presented in~\cite{Vohra:2019} to estimate $\mathbb{C}_i$. A regression-based approach outlined
-in~\cite{Constantine:2015} and~\cite{Vohra:2019} was used to estimate the gradients of $\mathcal{Z}_{i}$,
+to the number of samples, $N$. A regression-based approach outlined
+in~\cite{Vohra:2019} was used to estimate the gradients of $\mathcal{Z}_{i}$,
 required to compute the elements of $\mathbb{C}_i$.
 
 \subsubsection{Surrogate in the Active subspace}
@@ -194,7 +192,8 @@ surrogate fit, $\hat{\mathcal{Z}}_i$ is performed. Therefore, a total of $K^\ast
 to map the set of inputs $\bm{\theta}$ in the physical space to the field in the output space. The overall dimension
 reduction accomplished using the proposed methodology is $\mathbb{R}^{(r\ast c)}\rightarrow \mathbb{R}^{N_{\bm{\eta},
 \max}}$; where $N_{\bm{\eta},\max}$ is the maximum number of active variables, $\bm{\eta}$ required to construct
-a given $\hat{G}_i$. A overall flow diagram for the proposed methodology is provided in Figure~\ref{fig:fd}.
+a given $\hat{G}_i$, i.e. $\max\limits_j \Nj$. A overall flow diagram for the proposed methodology is provided in 
+Figure~\ref{fig:fd}.
 %
 \begin{figure}[htbp]
 \begin{center}
@@ -213,10 +212,10 @@ $\bm{\theta}\in\mathbb{R}^{\Nt}$};
 
 \draw [arrow] (pca) -- (zk);
 
-\node (as) [io, below of=field, text width=14em, yshift=-3.0cm]{$\mathcal{Z}_i(\bm{\theta})\approx 
+\node (as) [io, below of=field, text width=16em, yshift=-3.0cm]{$\mathcal{Z}_i(\bm{\theta})\approx 
 G(\bm{\eta}=\bm{\theta}^\top \bm{W_1})$\\ 
-$G(\bm{\eta})\approx \hat{G}(\bm{\eta})$, $\eta\in\mathbb{R}^{N_\eta}$\\
-DR: $\mathbb{R}^{\Nt}\rightarrow \mathbb{R}^{N_\eta}$, $N_\eta\ll \Nt$};
+$G(\bm{\eta})\approx \hat{G}(\bm{\eta})$, $\eta\in\mathbb{R}^{\Nj}$\\
+DR: $\mathbb{R}^{\Nt}\rightarrow \mathbb{R}^{N_{\bm{\eta},\max}}$, $N_{\bm{\eta},\max}\ll \Nt$};
 
 \draw [arrow] (zk) -- node [above] {Active Subspace} node [below] {Computation} (as);
 

@@ -14,8 +14,8 @@ in~\ref{sub:reliability}.
 A surrogate model is constructed for the residual stress field at the cross-section of the part 
 (x-z plane in Figure~\ref{fig:PartwMesh}) passing through its center. We will refer to this plane
 as x$^c$-z$^c$ in the remainder of this paper. The surrogate maps three sets of
-parameters, namely, the process control parameters~($\bm{\theta_p}$), mechanical properties~($\bm{\theta_m}$),
-and thermal properties~($\bm{\theta_t}$) to the stress field. The set of process control parameters includes
+parameters, namely, the process control parameters~($\bm{\theta_P}$), mechanical properties~($\bm{\theta_M}$),
+and thermal properties~($\bm{\theta_T}$) to the stress field. The set of process control parameters includes
 the beam power~($P$), scan speed~($v$), and the pre-heat temperature~($T_0$). Mechanical properties
 include the yield strength~($Y$), the elastic modulus~($E$), and the bulk density~($\rho$). Thermal 
 properties include specific heat~($C_p$) and bulk thermal conductivity~($\kappa$). Note that $C_p$ and $\kappa$
@@ -91,7 +91,7 @@ from $\mathbb{R}^{14\times 32=448}\rightarrow \mathbb{R}^7$. We now shift our fo
 in the input space.
 
 As discussed earlier in~\ref{sub:as}, each feature can be expressed as a function of $\bm{\theta}$ in the physical
-space. Note that $\bm{\theta}:\{\bm{\theta_p}\cup\bm{\theta_m}\cup\bm{\theta_t}\}$. An active subspace computation
+space. Note that $\bm{\theta}:\{\bm{\theta_P}\cup\bm{\theta_M}\cup\bm{\theta_T}\}$. An active subspace computation
 was performed using a regression-based approach~\cite{Constantine:2015, Vohra:2019}
 for estimating the gradient and the available set of 20 realizations for each $\mathcal{Z}_i$. 
 Eigenvalue spectrum of the matrix, $\hat{\mathbb{C}_i}$ for each $\mathcal{Z}_i$ is shown in Figure~\ref{fig:as}.
@@ -248,10 +248,10 @@ gradients.
 The composite surrogate was used for the purpose of global sensitivity analysis~(GSA). The residual stress
 field in the $x^c$-z$^c$ plane was simulated for 10$^6$ pseudorandom samples, generating using LHS
 in the 12-dimensional input domain. Thus, stress distribution is obtained at each point in the mesh. 
-The specific grid point with the maximum mean stress is regarded as the \textit{point of interest},
+The specific grid point with the maximum mean stress is regarded as the \textit{global hotspot},
 denoted as P. Our findings revealed that P is infact located at the top right corner of the $x^c$-z$^c$
 plane, consistent with the location of the square in Figure~\ref{fig:hs}.
-Figure~\ref{fig:kde_S} shows the PDF of stress distribution at point, P. 
+Figure~\ref{fig:kde_S} shows the PDF of stress distribution at point P. 
 %
 \begin{figure}[htbp]
 \begin{center}
@@ -262,6 +262,39 @@ Matlab. The distribution is based on 10$^6$ evaluations and the mode value is es
 \label{fig:kde_S}
 \end{figure}
 %
+GSA is performed with respect to the stress value at point $P$. 
+
+As mentioned earlier, the set of inputs in the physical space, $\bm{\theta}$ is classified into three
+categories: process control parameters~($\bm{\theta_P}$), mechanical properties~($\bm{\theta_M}$), and
+thermal properties~($\bm{\theta_T}$) of the alloy~(Ti6Al4V) used to manufacture the AM part. We focused
+our efforts on determining the relative importance of $\bm{\theta_P}$, $\bm{\theta_M}$, and $\bm{\theta_T}$
+wherein the individual parameters in each category were grouped; and the relative importance of the process
+control parameters and the material properties. The latter was performed by grouping $\bm{\theta_M}$ and
+$\bm{\theta_T}$. GSA was performed by estimating the main-effect and the total-effect Sobol' sensitivity
+indices at 10$^5$ samples in the input domain using an algorithm based on 
+Monte Carlo sampling~(MCS)~\cite{Sobol:2001}. The composite
+surrogate was used to make the computations tractable. The estimated sensitivities for the two cases
+are plotted in Figure~\ref{fig:gsa}.
+%
+\begin{figure}[htbp]
+\begin{center}
+\includegraphics[width=0.65\textwidth]{./Figures/grouped_GSA}
+\end{center}
+\caption{Left: Sobol' sensitivity indices for the set of inputs grouped as process variables~($\bm{\theta_P}:v,P,T_0$), 
+mechanical properties~($\bm{\theta_M}:Y,E,\rho$), and thermal properties~($\bm{\theta_T}:C_p,\kappa$).
+Right: Sobol' sensitivity indices for the set of inputs grouped as process variables~($\bm{\theta_P}$), and material 
+properties~($\bm{\theta_{M,T}}$).}
+\label{fig:gsa}
+\end{figure}
+%
+Several inferences can be made: The residual stress at P is most sensitive towards the mechanical properties, followed 
+by thermal properties of the alloy. Sensitivity towards the process control parameters is found to be relatively small. 
+However, it must be noted the the interactions between $\bm{\theta_P}$, $\bm{\theta_M}$, and $\bm{\theta_T}$
+are significantly large. Hence, the total-effect index of $\bm{\theta_P}$ indicates that the sensitivity towards the 
+process variables is substantial. Therefore, optimizing the process control parameters for minimizing residual
+stress in the AM part could help improve its performance characteristics. 
+Note that these results are dependent on the choice of nominal values of the
+inputs as well as the considered prior distribution in each case. 
 
 \subsection{Reliability Prediction}
 \label{sub:reliability}

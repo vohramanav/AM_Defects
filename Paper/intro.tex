@@ -8,11 +8,11 @@
 %4. Key contributions of the paper
 %5. Outline
 
-A surrogate model also referred to as an emulator, a response surface, or a hypothesis in the context of machine
-learning is a widely used and powerful tool that enables a range of applications pertaining to 
+A surrogate model also referred to as an emulator or a response surface,
+is a widely used and powerful tool that enables a range of applications pertaining to 
 computational science. As the name suggests, a surrogate aims to capture the nature of dependence of a system
 response or a model output on its inputs and parameters. It is typically informed by the underlying physics in the 
-case of a physics-based model or by data in the case of a machine learning~(e.g. neural networks~\cite{Hagan:1996}).
+case of a physics-based model or by data in the case of supervised learning~(e.g. neural networks~\cite{Hagan:1996}).
 A reliable surrogate could thus
 be used in lieu of the model for making predictions in a regime where it is validated. Therefore, for applications
 involving a large number of model evaluations such as uncertainty propagation, sensitivity analysis, parameter
@@ -24,29 +24,32 @@ in scientific applications, suffers from the so-called `curse of dimensionality'
 made towards efficient computation of the PC coefficients~(e.g. sparse 
 grids~\cite{Gerstner:1998,Ganapathysubramanian:2007}, basis adaptive 
 methods~\cite{Blatman:2011,Conrad:2013,Winokur:2013}), it remains computationally challenging for high-dimensional 
-applications especially if the QoI is a field as opposed to a scalar quantity. Similarly, in the case of Gaussian 
+applications especially if the quantity of interest~(QoI) is a field as opposed 
+to a scalar quantity. Similarly, in the case of Gaussian 
 Process~\cite{Rasmussen:2004} as
 a surrogate, computing the inverse of the correlation matrix becomes challenging in large dimensions. The complexity of
 a neural network is also expected to increase with dimensionality and consequently, the training process requires a large
 amount of data. 
 
-In this paper, we develop a novel approach that focuses on combining the dimensionality reduction in the output space 
-wherein the observation is a field quantity (as opposed to scalar) with dimensionality reduction in the input space. 
-More specifically, we first exploit principal component analysis to extract key features in the output. Then, we discover a 
+In this paper, we develop a novel approach that focuses on combining the dimensionality reduction in the \textit{output}
+space wherein the observation is a field quantity (as opposed to scalar) with dimensionality reduction in the \textit{input} 
+space. More specifically, we first exploit principal component analysis to extract key features in the output. Then, we 
+discover a 
 low-dimensional structure in the relationship between individual features and the set of inputs using the active
-subspace methodology~\cite{Constantine:2015}. Hence, the proposed framework involves compounded dimension
-reduction wherein dimension reduction is performed on key features of a field. The proposed methodology is
+subspace methodology~\cite{Constantine:2015}. Hence, the proposed framework involves \textit{compounded} dimension
+reduction wherein the dimension reduction is performed on key features of a field. The proposed methodology is
 thus referred to as the PCAS method in this work as it combines principal components with active subspaces.
 The framework is implemented to
 perform a reliability analysis of an additively manufactured~(AM) part by assessing the development of residual stress
-along its cross-section, at the end of a single pass of a laser scan in electron beam melting (EBM). 
+at the end of a single pass of a laser scan in electron beam melting (EBM). 
 
 Residual stress develops during the manufacturing process due to the presence of steep thermal gradients as
 well as physical constraints in the part which adversely affect its mechanical properties, geometry, and 
 shape~\cite{Withers:2001,Mercelis:2006,Hofmann:2014}. 
 In fact, residual stress in addition to porosity, is one of the main reasons for 
 part failure~\cite{Kim:2018}. The presence of residual stress in an AM part has significantly 
-inhibited the process of part certification due to post processing involving maching and heat treatment~\cite{Shiomi:2004}.
+inhibited rapid certification as well as standardization of the certification process
+due to post processing involving machining and heat treatment~\cite{Shiomi:2004}.
 Several recent investigations~\cite{Vastola:2016,Hodge:2016,Williams:2018}
 have focused on developing thermo-mechanical
 models to better understand the development of residual stress and optimize the microstructure as well as
@@ -59,26 +62,27 @@ process control and optimization for controlling the evolution residual stress d
 Since residual
 stress is a field quantity and reliability analysis typically requires a large number of simulations, it is not practical
 to rely on a finite element model (FEM) that could take hours per run. Additionally, conventional approaches for surrogate
-modeling would require a large amount of computational resources. A random field approximation is a possibility for
+modeling would require a large amount of computational resources for the purpose of training as discussed earlier.
+ A random field approximation is a possibility for
 output dimension reduction. However, such an approximation could potentially introduce large errors in the  
 representation of the field. Instead, we aim to exploit the structure in the data from an FEM by identifying important 
 directions or principal components in the field. This approach allows us to select an optimal number of 
-features required to re-construct the field within a reasonable amount of computational effort. 
+features required to re-construct the field with reasonable accuracy and computational effort. 
 
 Key contributions of this paper can be summarized as follows: (1) A computationally efficient approach is developed
 for constructing an efficient surrogate for problems where a large set of inputs are mapped to a large-dimensional
 field data. (2) A finite element model is developed to simulate residual stress in an additively manufactured part
 at the end of a single scan of the laser beam in an EBM process. (3) The surrogate is used to perform a global
-sensitivity analysis to assess relative importance of the material properties and the process control parameters
+sensitivity analysis~(GSA) to assess relative importance of the material properties and the process control parameters
 in the context of residual stress. (4) Finally, the surrogate is used for the purpose of reliability analysis by estimating the
 probability of failure using \textit{hotspot detection} in the part. 
 
 The remainder of this paper is organized as follows: Section~\ref{sec:method} outlines the proposed methodology for
-constructing the surrogate include a brief background on the active subspace methodology used in this work.
+constructing the surrogate including a brief background on the active subspace methodology used in this work.
 Section~\ref{sec:model} details the finite element model used to generate the stress data for building the surrogate.
-Section~\ref{sec:results} includes our findings and discussion pertaining to the implementation of the methodology to
-the perform a reliability analysis based on residual stress in the AM part. Finally, we summarize this study in 
-Section~\ref{sec:conc}. 
+Section~\ref{sec:results} includes our findings and discussion pertaining to the implementation of the methodology 
+for surrogate construction, GSA, and reliability analysis of the AM part. 
+Finally, we summarize this study in Section~\ref{sec:conc}. 
 
 
 

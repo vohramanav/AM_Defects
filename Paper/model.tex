@@ -15,10 +15,10 @@ Our analysis is based on stress development in an AM part as a result of a singl
 electron beam along its
 length. A layer thickness, 50~$\mu$m and a part of dimensions (in mm), 2$\times 1.5\times 0.65$ was used as shown
 in Figure~\ref{fig:PartwMesh}~(left). 
-The process of laying the new powder on bulk material formed by previous scans is simulated 
+The process of laying the new powder on bulk material formed by previous scans was simulated 
 by activating the initially deactivated elements representing the powder layer. To mitigate computational cost
 associated with FEA, a non-uniform mesh was employed wherein a finer mesh was considered for the powder
-region where the heat flux is applied. A gradually coarsening mesh was considered for the bulk material, significantly far 
+region where the heat flux was applied. A gradually coarsening mesh was considered for the bulk material, significantly far 
 from the heat source as shown in Figure~\ref{fig:PartwMesh}~(right). The mesh comprised 13,200 nodes and 
 10,752 elements in total. 
 %
@@ -27,7 +27,7 @@ from the heat source as shown in Figure~\ref{fig:PartwMesh}~(right). The mesh co
 \includegraphics[width=0.4\textwidth]{./Figures/EBM_PartwXYZ} 
 \includegraphics[width=0.4\textwidth]{./Figures/meshwXYZ}
 \end{center}
-\caption{Geometry and mesh of the part in Abaqus}
+\caption{Part geometry and the corresponding mesh as modeled in Abaqus}
 \label{fig:PartwMesh}
 \end{figure}
 %
@@ -58,9 +58,9 @@ thermophysical properties considered in the FEM are provided in Table~\ref{tab:m
 
 The governing equation for the heat transfer analysis \cite{Zinoviev:2016} is given by:
 \begin{equation}\label{eq_thermal}
-\rho {C_p}\frac{{\partial T}}{{\partial t}} = -\nabla\cdot ({k_c}\nabla T) + Q_e - Q_r 
+\rho {C_p}\frac{{\partial T}}{{\partial t}} = -\nabla\cdot ({\kappa}\nabla T) + Q_e - Q_r 
 \end{equation}
-where $T$, $\rho$, $C_p$, $k_c$, $Q$ denote the local temperature, average density, specific heat,  thermal conductivity, 
+where $T$, $\rho$, $C_p$, $\kappa$, $Q_e$ denote the local temperature, average density, specific heat,  thermal conductivity, 
 and the applied heat flux respectively. A single scan is considered along the x-direction at the top surface of the part. 
 The moving electron beam heat source is modeled as a Gaussian~\cite{Vastola:2016} according to the following
 equation:
@@ -80,8 +80,9 @@ Figure~\ref{fig:thermal}~(right).
 \includegraphics[width=0.42\textwidth]{./Figures/NT11Nom3D} 
 \includegraphics[width=0.42\textwidth]{./Figures/NT11Nom} 
 \end{center}
-\caption{Left: Heat load due to moving electron beam. Right: Nodal temperature (XZ cross-section) at the center when
-the EB is turned off.}
+\caption{Left: Temperature contours associated with the moving electron beam as a heat source. Right:
+Temperature contours in the x-z plane passing through the center of the part once the electron beam is 
+turned off.}
 \label{fig:thermal}
 \end{figure}
 %
@@ -90,7 +91,7 @@ The beam radius~($r$) and the thermal penetration depth were fixed at 200 and 28
 microns respectively. The powder is pre-heated to a temperature, $T_0$ prior to the scan using fixed temperature
 boundary conditions at the lateral sides as well as the bottom of the part. Heat transfer in the part occurs by two
 mechanisms: First, by means of thermal conduction due to temperature gradients especially along the depth (x-z plane),
-and second, by means of radiative losses from the exposed surface of the part denoted as $Q_r$ in~\eqref{eq_heatFlux}.
+and second, by means of radiative losses from the exposed surface of the part denoted as $Q_r$ in~\eqref{eq_thermal}.
 The radiative heat flux, $Q_r$ is modeled using the Stefan-Boltzmann law i.e., $Q_r=\sigma\epsilon(T^4-T_a^4)$, where
 $\sigma$, $\epsilon$, and $T_a$ denote the Stefan-Boltzmann constant, emissivity of the top surface, and the ambient
 temperature respectively. Note that convective losses are not considered since the manufacturing process was
@@ -136,8 +137,8 @@ in Figure~\ref{fig:subSmises}
 \begin{center}
 \includegraphics[width=0.6\textwidth]{./Figures/SMisesNom} 
 \end{center}
-\caption{von Mises stress (XZ cross-section) in MPa at the center after 
-cooling to ambient temperature.}
+\caption{von Mises stress contours in the x-z plane passing through the center of the part after it has cooled
+down to the ambient temperature.}
 \label{fig:subSmises}
 \end{figure}
 %

@@ -1,2 +1,98 @@
-\section{Summary}
+\section{Summary and Discussion}
 \label{sec:conc}
+
+In this paper, we have proposed an efficient approach, namely the PCAS method for constructing a surrogate model that 
+maps a high-dimensional input to a high-dimensional output. The high-dimensional output is considered as a field quantity,
+estimated at discrete points on a mesh used for numerical simulations. Computational efficiency is
+accomplished by means of dimension reduction in the output space as well as the input space.
+We begin by determining the optimal number of
+components required to reasonably approximate the field using an iterative PCA approach~(Algorithm~\ref{alg:pca}).
+The optimal set of components or important directions are hence used to determine a set of features that
+are representative of the field of interest. The number of features is the same as the number of optimal components.
+Each feature is regarded as a function of the set of input variables. Variability in a given feature due to the variability
+in the inputs is captured in a low-dimensional subspace using the active subspace methodology discussed
+in~\ref{sub:as}. The PCAS method thus enables compounded dimension reduction since it reduces the dimensionality
+of the map from a set of inputs to key features in the output. Computational efficiency is enhanced by constructing 
+a surrogate in the active subspace computed for each feature. Therefore, the overall map from the input space
+to the output field of interest comprises an array of individual surrogates, and is therefore regarded as the
+composite surrogate. It is expected that the computational efficiency is accomplished with a trade-off in accuracy.
+Therefore, it is critical to perform a robust verification and validation of the resulting surrogate model as discussed
+in~\ref{subsub:vnv}. 
+
+The proposed methodology is demonstrated using an engineering application pertaining to reliability analysis of
+an additively manufactured part. Specifically, we focused our efforts on predicting the development of residual
+stress in a part at the end of an electron beam melting process using a finite element model in Abaqus.
+Due to the limited availability of computational
+resources, we considered a single pass of the beam in this work. Nevertheless, it was found to be sufficient for
+illustrating the potential of the PCAS method. The von Mises stress field in a 2-dimensional non-uniform mesh
+in a cross-section of the AM part was considered as residual stress and the field of interest. It was found that
+7 features were able to approximate the stress field using the iterative PCA approach. The set of inputs
+comprising the process control parameters, mechanical and thermal properties of the alloy (used to manufacture the
+AM part) were mapped to each of these 7 features. A 1-2 dimensional active subspace was shown to reasonably
+capture the dependence of each feature on the inputs thereby indicating enormous scope for computational gains.
+The surrogate was shown to be remarkably accurate by estimating the relative L-2 norm of the discrepancy
+between the model output and the field reconstructed using the composite surrogate. Specifically, on average, the
+surrogate achieved an accuracy of about 4$\%$ and 7$\%$ in the verification and validation tests respectively.
+
+The surrogate was used to detect hotspots in the AM part~(Section~\ref{subsub:hotspot}), and global sensitivity
+analysis of the process variables, mechanical, and thermal properties of the alloy~(Section~\ref{sub:gsa}). 
+The hotspots were observed to be in the proximity of the applied heat source, i.e. closer to the surface of the
+AM part, thereby indicating that the residual stress is dominated by the presence of large temperature gradients.
+The GSA results 
+indicate that the residual stress is relatively more sensitive towards the material properties, although the sensitivity
+towards the process variables is also found to be significant due to their interactions with the material properties,
+accounted for in the total-effect index. Finally, the composite surrogate was exploited to numerically estimate the
+probability of failure using a million samples in the input domain for the purpose of reliability analysis of the AM part. 
+The part was considered to have failed if the von Mises stress at the global hotspot (point P) exceeded a limiting 
+value of 900~MPa. The probability of failure was estimated to be 0.177. 
+
+It must be highlighted that the aforementioned
+analyses such as hotspot detection, GSA, and reliability prediction are typically computationally intensive and
+infeasible in additive manufacturing.
+ The composite surrogate constructed using the PCAS method makes them computationally
+feasible while ensuring a reasonable amount of accuracy for the present application.
+ However, there are limitations that should be considered
+when applying the proposed framework. First, dimension reduction in the output space is conditioned upon the
+existence of a structure in the data that could be captured by a relatively small number of principal components or
+directions. Second, a low-dimensional active subspace can be used to map the set of inputs to the quantity of
+ interest~(QoI).
+To satisfy this requirement, the gradient of the QoI with respect to each input should be estimated
+with reasonable accuracy. For the application presented in this work, we have used a regression-based approach for 
+estimating the gradients that resulted in a reasonably accurate surrogate for each feature of the output field of interest.
+However, depending upon the relationship between the QoI and the set of inputs, a relatively more accurate approach
+such as those involving perturbation techniques~(e.g.~automatic differentiation~\cite{Kiparissides:2009}, adjoint 
+methods~\cite{Borzi:2011, Alexanderian:2017}) may be required. Additionally, the active subspace methodology is
+not suitable in situations where the gradient is not continuous in the entire domain of the inputs.
+
+To sum up, the proposed methodology was successfully demonstrated for a reasonably challenging practical
+application involving reliability analysis based on residual stress in an AM part, manufactured using the EBM process. 
+Enormous computational gains leading to dimension reduction by two orders of magnitude was accomplished. Therefore,
+the proposed framework seems like a powerful tool for surrogate building in applications involving large input and
+output dimensions. Our future efforts will focus on further development of the proposed framework to enhance its
+applicability as a prognosis tool for process control and optimization as well as defect characterization and minimization in 
+additive manufacturing.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
