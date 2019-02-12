@@ -1,23 +1,27 @@
 \section*{Abstract}
 
-An efficient approach referred to as the PCAS method for surrogate modeling in high input and output dimensions is 
-proposed. Specifically, a large
-collection of input variables is mapped to a field of interest as opposed to a scalar model output or a system response.
+An efficient approach referred to as the PCAS method for surrogate modeling in the presence of
+high-dimensional input and output is proposed. Specifically, a large
+collection of input variables is mapped to an output of interest which is a field quantity as opposed
+to a scalar.
 Computational efficiency is accomplished by first identifying principal components~(PC)
-or directions in  the output field data. A set of representative features corresponding to the important directions is 
+or directions in  the output field data. A set of representative features corresponding to the important directions
+of the high-dimensional output is 
 determined. A map from the set of inputs in the physical space to each feature is considered,
 and the active subspace~(AS) methodology is used to capture their relationship in a low-dimensional subspace in the input 
-domain. The map for each feature is hence approximated by a surrogate in the active subspace. Thus, the PCAS
-method aims at \textit{compounded} dimension reduction wherein the inputs are mapped to a set of representative features
-that approximate the field of interest. The resulting map is referred to as the \textit{composite surrogate}.
+domain. The map for each feature of the output is then approximated by a surrogate in the active subspace. Thus, the PCAS
+method aims to accomplish dimension reduction in the input as well as the output by first mapping the set of inputs
+in the physical space to fewer variables in the active subspace~(active variables), and linking these active variables
+to a set of representative features
+that approximate the field of interest. 
 The proposed framework is implemented to build a surrogate for the purpose of reliability analysis
-based on residual stress in an additively
-manufactured component using the electron beam melting process. The surrogate is further exploited for detecting 
-stress hotspots in the part, and global sensitivity analysis to determine the impact of process variables and
+with respect to residual stress in an additively
+manufactured component. The surrogate is further exploited for detecting 
+stress hotspots in the component, and for global sensitivity analysis to determine the impact of process variables and
 alloy material properties on the development of residual stress. Our findings based on the considered application
 are indicative of enormous potential for computational gains for such analyses. 
 
 \bigskip
 
-\noindent \textbf{Keywords}: Principal components, active subspace, surrogate, dimension reduction,
+\noindent \textbf{Keywords}: Principal components, active subspace, surrogate model, dimension reduction,
 residual stress, additive manufacturing

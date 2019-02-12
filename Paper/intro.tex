@@ -8,37 +8,38 @@
 %4. Key contributions of the paper
 %5. Outline
 
-A surrogate model also referred to as an emulator or a response surface,
-is a widely used and powerful tool that enables a range of applications pertaining to 
-computational science. As the name suggests, a surrogate aims to capture the nature of dependence of a system
-response or a model output on its inputs and parameters. It is typically informed by the underlying physics in the 
-case of a physics-based model or by data in the case of supervised learning~(e.g. neural networks~\cite{Hagan:1996}).
-A reliable surrogate could thus
-be used in lieu of the model for making predictions in a regime where it is validated. Therefore, for applications
+%A surrogate model also referred to as an emulator or a response surface,
+%is a widely used and powerful tool that enables a range of applications pertaining to 
+%computational science. As the name suggests, a surrogate aims to capture the nature of dependence of a system
+%response or a model output on its inputs and parameters. It is typically informed by the underlying physics in the 
+%case of a physics-based model or by data in the case of supervised learning~(e.g. neural networks~\cite{Hagan:1996}).
+%A reliable surrogate could thus
+%be used in lieu of the model for making predictions in a regime where it is validated. 
+
+A surrogate model can offer a significant computational advantage in situations involving intensive
+simulations, especially for applications
 involving a large number of model evaluations such as uncertainty propagation, sensitivity analysis, parameter
-estimation, and machine learning; a surrogate model can offer a significant computational advantage in situations involving 
-intensive simulations. However, constructing a reasonably accurate surrogate itself can be computationally demanding.
+estimation, and optimization. However, constructing a reasonably accurate surrogate itself can be computationally demanding.
 For instance, estimation of coefficients of a polynomial chaos expansion (PCE)~\cite{Xiu:2002,Ghanem:1991},
 a commonly used surrogate
 in scientific applications, suffers from the so-called `curse of dimensionality'. Although remarkable progress has been 
 made towards efficient computation of the PC coefficients~(e.g. sparse 
-grids~\cite{Gerstner:1998,Ganapathysubramanian:2007}, basis adaptive 
+grids~\cite{Gerstner:1998,Ganapathysubramanian:2007} and basis adaptive 
 methods~\cite{Blatman:2011,Conrad:2013,Winokur:2013}), it remains computationally challenging for high-dimensional 
-applications especially if the quantity of interest~(QoI) is a field as opposed 
+applications especially if the output quantity of interest~(QoI) is a field as opposed 
 to a scalar quantity. Similarly, in the case of Gaussian 
-Process~\cite{Rasmussen:2004} as
-a surrogate, computing the inverse of the correlation matrix becomes challenging in large dimensions. The complexity of
-a neural network is also expected to increase with dimensionality and consequently, the training process requires a large
-amount of data. 
+Process~\cite{Rasmussen:2004} surrogate modeling, computing the inverse of the correlation matrix
+becomes challenging in large dimensions. 
 
-In this paper, we develop a novel approach that focuses on combining the dimensionality reduction in the \textit{output}
+In this paper, we develop a novel surrogate modeling approach that focuses on combining the dimensionality reduction
+in the \textit{output}
 space wherein the observation is a field quantity (as opposed to scalar) with dimensionality reduction in the \textit{input} 
 space. More specifically, we first exploit principal component analysis to extract key features in the output. Then, we 
 discover a 
-low-dimensional structure in the relationship between individual features and the set of inputs using the active
-subspace methodology~\cite{Constantine:2015}. Hence, the proposed framework involves \textit{compounded} dimension
-reduction wherein the dimension reduction is performed on key features of a field. The proposed methodology is
-thus referred to as the PCAS method in this work as it combines principal components with active subspaces.
+low-dimensional structure in the relationship between representative features of the output and the set of inputs using
+the active
+subspace methodology~\cite{Constantine:2015}. The proposed methodology is
+referred to as the PCAS method in this work as it combines principal components~(PC) with active subspaces~(AS).
 The framework is implemented to
 perform a reliability analysis of an additively manufactured~(AM) part by assessing the development of residual stress
 at the end of a single pass of a laser scan in electron beam melting (EBM). 
@@ -46,7 +47,7 @@ at the end of a single pass of a laser scan in electron beam melting (EBM).
 Residual stress develops during the manufacturing process due to the presence of steep thermal gradients as
 well as physical constraints in the part which adversely affect its mechanical properties, geometry, and 
 shape~\cite{Withers:2001,Mercelis:2006,Hofmann:2014}. 
-In fact, residual stress in addition to porosity, is one of the main reasons for 
+In fact, residual stress in addition to porosity is one of the main reasons for 
 part failure~\cite{Kim:2018}. The presence of residual stress in an AM part has significantly 
 inhibited rapid certification as well as standardization of the certification process
 due to post processing involving machining and heat treatment~\cite{Shiomi:2004}.
@@ -59,9 +60,16 @@ of computational and experimental resources. Through this study, we aim to demon
 based on surrogate modeling that could accelerate material selection, microstructure design, and
 process control and optimization for controlling the evolution residual stress during additive manufacturing. 
 
-Since residual
-stress is a field quantity and reliability analysis typically requires a large number of simulations, it is not practical
-to rely on a finite element model (FEM) that could take hours per run. Additionally, conventional approaches for surrogate
+Residual stress in an AM part is computed using a finite element thermo-mechanical model in Abaqus in this work. 
+More specifically, the finite element model~(FEM) includes a thermal model that simulates the thermal response of the
+part. Part thermal response is then used as an input to a mechanical model that predicts residual stress at the end
+of a cooling phase. For a given set of process conditions and material properties, the thermal model requires
+approximately 20 minutes to generate the temperature field and the mechanical model takes approximately 10
+minutes to estimate the residual stress in the part. Therefore, one realization of the output field of interest
+using the FEM requires approximately 20 minutes. In order to perform reliability analysis using
+sampling techniques, $\mathcal{O}(10^4--10^5)$ realizations are typically required for reasonable accuracy.  
+Therefore, it is not practical
+to rely on the FEM for this purpose. Additionally, conventional approaches for surrogate
 modeling would require a large amount of computational resources for the purpose of training as discussed earlier.
  A random field approximation is a possibility for
 output dimension reduction. However, such an approximation could potentially introduce large errors in the  
