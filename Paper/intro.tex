@@ -66,30 +66,31 @@ part. Part thermal response is then used as an input to a mechanical model that 
 of a cooling phase. For a given set of process conditions and material properties, the thermal model requires
 approximately 20 minutes to generate the temperature field and the mechanical model takes approximately 10
 minutes to estimate the residual stress in the part. Therefore, one realization of the output field of interest
-using the FEM requires approximately 20 minutes. In order to perform reliability analysis using
+using the FEM requires approximately 30 minutes. In order to perform reliability analysis using
 sampling techniques, $\mathcal{O}(10^4--10^5)$ realizations are typically required for reasonable accuracy.  
 Therefore, it is not practical
 to rely on the FEM for this purpose. Additionally, conventional approaches for surrogate
 modeling would require a large amount of computational resources for the purpose of training as discussed earlier.
  A random field approximation is a possibility for
 output dimension reduction. However, such an approximation could potentially introduce large errors in the  
-representation of the field. Instead, we aim to exploit the structure in the data from an FEM by identifying important 
+representation of the non-stationary output field. Instead, we aim to exploit the structure in the output data 
+by identifying important 
 directions or principal components in the field. This approach allows us to select an optimal number of 
 features required to re-construct the field with reasonable accuracy and computational effort. 
 
-Key contributions of this paper can be summarized as follows: (1) A computationally efficient approach is developed
-for constructing an efficient surrogate for problems where a large set of inputs are mapped to a large-dimensional
-field data. (2) A finite element model is developed to simulate residual stress in an additively manufactured part
+The main highlights of this paper are as follows: (1) A computationally efficient approach is developed
+for constructing a surrogate model for problems where both input and output are high-dimensional.
+(2) A finite element model is developed to simulate residual stress in an additively manufactured part
 at the end of a single scan of the laser beam in an EBM process. (3) The surrogate is used to perform a global
 sensitivity analysis~(GSA) to assess relative importance of the material properties and the process control parameters
 in the context of residual stress. (4) Finally, the surrogate is used for the purpose of reliability analysis by estimating the
-probability of failure using \textit{hotspot detection} in the part. 
+probability that residual stress in the part exceeds a certain threshold.
 
 The remainder of this paper is organized as follows: Section~\ref{sec:method} outlines the proposed methodology for
-constructing the surrogate including a brief background on the active subspace methodology used in this work.
+constructing the surrogate model including a brief background on the active subspace methodology used in this work.
 Section~\ref{sec:model} details the finite element model used to generate the stress data for building the surrogate.
-Section~\ref{sec:results} includes our findings and discussion pertaining to the implementation of the methodology 
-for surrogate construction, GSA, and reliability analysis of the AM part. 
+Section~\ref{sec:results} provides numerical results and discussion pertaining to the implementation of the methodology 
+for surrogate construction, GSA, and reliability analysis of the AM product. 
 Finally, we summarize this study in Section~\ref{sec:conc}. 
 
 

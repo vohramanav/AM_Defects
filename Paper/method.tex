@@ -1,7 +1,7 @@
-\section{The PCAS Method}
+\section{Proposed PCAS Method}
 \label{sec:method}
 
-As discussed earlier in Section~\ref{sec:intro}, we aim to construct a surrogate for mapping the set of inputs to a
+As discussed earlier in Section~\ref{sec:intro}, we aim to construct a surrogate model for mapping the set of inputs to a
 field quantity. In the proposed methodology, we outline a two-step process to accomplish this. The first step involves
 dimension reduction in the output space that involves
 identification of principal directions or components in the data set for the field of interest. These components are used
@@ -9,13 +9,15 @@ to construct a feature vector. Each element in the feature vector is an inner pr
 of a given principal direction. Hence, the number of features is equal to the number of principal directions used to
 reconstruct the field. In the second step, each feature is represented as a function of the inputs and a low-dimensional
 representation of the function is computed
-using the active subspace methodology outlined in~\cite{Constantine:2015}. The active subspace predominantly
-captures the variability in each feature due to the variability in the inputs. 
+using the active subspace methodology outlined in~\cite{Constantine:2015}. 
+To avoid unnecessary computations of the finite element model and thereby enhance the efficiency of the proposed method,
+the two steps are implemented in an iterative manner as discussed further below. 
 In~\ref{sub:pca}, we outline
 the strategy for computing the feature vector. In~\ref{sub:as}, we provide a brief background on active subspaces
-and outline the sequence of steps for surrogate construction for each feature. 
+and outline the sequence of steps for surrogate construction for each feature. The overall iterative procedure for
+constructing the surrogate is discussed in~\ref{sub:pcas}.
 
-\subsection{Principal Component Analysis}
+\subsection{Step 1: Output Dimension Reduction using PCA}
 \label{sub:pca}
 
 For the purpose of outlining the computational framework, we consider a field,
@@ -39,6 +41,7 @@ being smaller than a considered threshold, $\tau$. The sequence of steps
 is outlined in Algorithm~\ref{alg:pca}.
 %
 \bigskip
+\begin{spacing}{0.95}
 \begin{breakablealgorithm}
 \renewcommand{\algorithmicrequire}{\textbf{Input:}}
 \renewcommand{\algorithmicensure}{\textbf{Output:}}
@@ -46,7 +49,7 @@ is outlined in Algorithm~\ref{alg:pca}.
   \begin{algorithmic}[1]
   \Require $\tau$, $\mat{S}_i$'s, $\bm{\theta_i}$'s ($i=1,2,\ldots,N_s$)
   \Ensure $\mat{U}^r$, $K^\ast$
-	\Procedure{Iterative PCA}{} 
+	\Procedure{Output Dimension Reduction}{} 
 	\State Construct the data matrix, $\mat X$:
 	\State Set $k$ = 0
 	\Loop
@@ -59,7 +62,7 @@ is outlined in Algorithm~\ref{alg:pca}.
 		\EndIf
 	\EndLoop
 	\State Perform an SVD on the covariance matrix, $\mat{X}^\top \mat{X}$:
-	\Statex \[ \mat{X}^\top \mat{X} = USV^\top \]
+	\Statex \[ \mat{X}^\top \mat{X} = \mat{U}\mat{S}\mat{V}^\top \]
 	\State Optimize the number of components, $K$:
 	\State Set $K$ = 1
 	\Loop
@@ -79,10 +82,11 @@ is outlined in Algorithm~\ref{alg:pca}.
   \end{algorithmic}
   \label{alg:pca}
 \end{breakablealgorithm}
+\end{spacing}
 \bigskip
 %
 
-At the end of the iterative procedure, a feature vector with $K^\ast$ components is is obtained for each $\bm{\theta_i}$.
+At the end of the iterative procedure, a feature vector with $K^\ast$ components is obtained for each $\bm{\theta_i}$.
 Dimension reduction in the output space is thus achieved since $K^\ast\ll (r\ast c)$, where $(r\ast c)$ is the 
 dimensionality of the column space of $\mat{U}$.
 The feature matrix, $\mat{\mathcal{Z}}$ can be mathematically represented as follows:
@@ -161,9 +165,11 @@ required to compute the elements of $\mathbb{C}_i$.
 \label{sub:surr}
 
 Significant computational gains are expected in situations where a low-dimensional active subspace captures the
-variability in the output with reasonable accuracy. However, gains can be increased further by constructing a 
-surrogate ($\hat{G}(\bm{\eta})$) for the variability ($G(\bm{\eta})$) in the subspace. If the surrogate is 1-2 dimensional,
-a polynomial regression fit would be appropriate. However, for a relatively large dimensional surrogate, one could
+variability in the output with reasonable accuracy. However, computational gains as a result of dimension reduction
+can be enhanced by approximating the variability~($G(\bm{\eta})$) in the subspace with a surrogate
+model~($\hat{G}(\bm{\eta})$). In situations where the variability is captured using 1-2 dominant eigenvectors in
+the active subspace, a simple polynomial regression fit is a reasonable choice for the surrogate model. 
+However, for a relatively large dimensional surrogate model, one could
 use a PCE or a GP. It is critical to validate the surrogate for its predictive accuracy. 
 The following algorithm provides a sequence of steps adapted from~\cite{Constantine:2015} to construct a
 surrogate in the active subspace.
@@ -187,21 +193,61 @@ surrogate in the active subspace.
 \end{breakablealgorithm} 
 %
 
+\bigskip
 To sum up, an active subspace is computed for each dominant feature, $\mathcal{Z}_i$ and a corresponding
 surrogate fit, $\hat{\mathcal{Z}}_i$ is performed. Therefore, a total of $K^\ast$ surrogates are constructed
-to map the set of inputs $\bm{\theta}$ in the physical space to the field in the output space. The overall dimension
-reduction accomplished using the proposed methodology is $\mathbb{R}^{(r\ast c)}\rightarrow \mathbb{R}^{N_{\bm{\eta},
-\max}}$; where $N_{\bm{\eta},\max}$ is the maximum number of active variables, $\bm{\eta}$ required to construct
-a given $\hat{G}_i$, i.e. $\max\limits_j \Nj$. A overall flow diagram for the proposed methodology is provided in 
-Figure~\ref{fig:fd}.
+to map the set of inputs $\bm{\theta}$ in the physical space to the field in the output space. 
+Therefore, at the end of the step process, dimension reduction in the output space is 
+$\mathbb{R}^{(r\ast c)}\rightarrow \mathbb{R}^{K^\ast}$, and dimension reduction in the input space
+is $\mathbb{R}^{K^\ast}\rightarrow \mathbb{R}^{N_{\bm{\eta},\max}}$; 
+where $N_{\bm{\eta},\max}$ is the maximum number of active variables, $\bm{\eta}$ required to construct
+a given $\hat{G}_i$, i.e. $\max\limits_j \Nj$. The iterative procedure for constructing the surrogate model is
+discussed in~\ref{sub:pcas}.
+
+\subsection{Iterative Procedure for Surrogate Construction}
+\label{sub:pcas}
+
+As a first step, we construct a cross-validation data set using the FEM
+ for testing the accuracy of the surrogate model. 
+An initial set realizations of the residual stress field is generated at $N_0$ samples 
+(drawn from the joint pdf of $\bm{\theta}$) using the FEM. 
+The optimal number of components~($K^0$) or representative features~($\mathcal{Z}_i^0$, $i=1,\ldots,K^0$)
+are then determined for
+the initial dataset using Algorithm~\ref{alg:pca}. A map from $\bm{\theta}$ to each feature $\mathcal{Z}_i^0$
+is approximated by a surrogate: $\mathcal{Z}_i^0\approx \hat{G}(\bm{\eta})$ in the active subspace using
+the methodology presented in~\ref{sub:as}. The residual field is reconstructed using surrogate 
+prediction for each feature $\mathcal{Z}_i^0$. Finally, we compute verification error~($\varepsilon_0^{\text{ver}}$)
+and validation error~($\varepsilon_0^{\text{val}}$)
+for the surrogate model by reconstructing the field at the same set of $N_0$
+samples used for building the surrogate and the samples used for cross-validation respectively. 
+The mathematical expression for the two errors is given as
+follows:
+%
+\be
+\varepsilon_0^{\text{ver,val}} = 
+\frac{1}{N_0^{\text{ver,val}}}\sum\limits_{i=1}^{N_0^{\text{ver,val}}} \frac{\|\mat{S}_0-\hat{\mat{S}}_0\|_2}{\|\mat{S}_0\|_2},
+\label{eq:check}
+\ee
+%
+where $N_0^{\text{ver}}$ and $N_0^{\text{val}}$ denote the number of samples used for verification and validation
+respectively; $\mat{S}_0$ and $\hat{\mat{S}}_0$ denote the stress field simulated using the FEM and the 
+surrogate model respectively. Note that the subscript `0' indicates that these variables correspond to the initial set
+of computations. 
+A new set of realizations for the residual stress field is generated at each subsequent iteration
+and augmented with the existing data set. The two step process is repeated until both $\varepsilon_0^{\text{ver}}$
+and $\varepsilon_0^{\text{val}}$ are found to be smaller than 0.1. In other words, convergence is established 
+once the reconstructed field is observed to be accurate within 10$\%$. An overall flow diagram for the two
+step process implemented at each iteration for the input and output dimension reduction is illustrated in
+Figure~\ref{fig:fd}. Once dimension reduction for a given iteration is complete, the field is reconstructed
+using the sequence illustrated in Figure~\ref{fig:re}.
 %
 \begin{figure}[htbp]
 \begin{center}
-\begin{tikzpicture}[node distance=1.2cm,scale=0.6, every node/.style={scale=1.0}]
+\begin{tikzpicture}[node distance=1.2cm,scale=0.5, every node/.style={scale=1.0}]
 
 \node (field) [io, text width=6em] {Field Data\\ $\mat{S}\in\mathbb{R}^N$};
 
-\node (pca) [process, right of=field, text width=15em, xshift=7.5cm] {Optimal number of features: \\ 
+\node (pca) [process, right of=field, text width=15em, xshift=8.2cm] {Optimal number of features: \\ 
 $\mathcal{Z}_i$, $i=1,\ldots,K^\ast$\\
 DR: $\mathbb{R}^{N}\rightarrow \mathbb{R}^{K^\ast},~K^\ast\ll N$};
 
@@ -227,9 +273,6 @@ DR: $\mathbb{R}^{\Nt}\rightarrow \mathbb{R}^{N_{\bm{\eta},\max}}$, $N_{\bm{\eta}
 \label{fig:fd}
 \end{figure}
 %
-Once a surrogate for each feature is built, the field of interest can be reconstructed as shown in Figure~\ref{fig:re}.
-%
-%
 \begin{figure}[htbp]
 \begin{center}
 \begin{tikzpicture}[node distance=1.2cm,scale=0.6, every node/.style={scale=1.0}]
@@ -253,7 +296,23 @@ Once a surrogate for each feature is built, the field of interest can be reconst
 \caption{Flow diagram illustrating the sequence of steps for reconstructing the field of interest.}
 \label{fig:re}
 \end{figure}
+\bigskip
 
+The sequence of steps associated with the iterative procedure for building the surrogate model is provided in
+Algorithm~\ref{alg:pcas}. 
+%
+\begin{breakablealgorithm}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+  \caption{Iterative strategy for surrogate modeling using the PCAS method}
+  \begin{algorithmic}[1]
+	\Procedure{PCAS Methodology}{} 
+%	  \State Consider $N$ available data points in the full space, $(\vec\xi_k,\mathcal{Z}_i(\vec\xi_k))$, $k~=~1,\ldots,N$
+	\EndProcedure
+  \end{algorithmic}
+  \label{alg:pcas}
+\end{breakablealgorithm} 
+%
 
 
 
