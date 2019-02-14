@@ -213,8 +213,9 @@ An initial set realizations of the residual stress field is generated at $N_0$ s
 (drawn from the joint pdf of $\bm{\theta}$) using the FEM. 
 The optimal number of components~($K^0$) or representative features~($\mathcal{Z}_i^0$, $i=1,\ldots,K^0$)
 are then determined for
-the initial dataset using Algorithm~\ref{alg:pca}. A map from $\bm{\theta}$ to each feature $\mathcal{Z}_i^0$
-is approximated by a surrogate: $\mathcal{Z}_i^0\approx \hat{G}(\bm{\eta})$ in the active subspace using
+the initial dataset using Algorithm~\ref{alg:pca}. A map from $\bm{\xi}$ to each feature $\mathcal{Z}_i^0$
+is approximated by a surrogate: $\mathcal{Z}_i^0(\bm{\xi})\approx 
+\hat{G}_i(\bm{\eta})$ in the active subspace using
 the methodology presented in~\ref{sub:as}. The residual field is reconstructed using surrogate 
 prediction for each feature $\mathcal{Z}_i^0$. Finally, we compute verification error~($\varepsilon_0^{\text{ver}}$)
 and validation error~($\varepsilon_0^{\text{val}}$)
@@ -236,14 +237,44 @@ of computations.
 A new set of realizations for the residual stress field is generated at each subsequent iteration
 and augmented with the existing data set. The two step process is repeated until both $\varepsilon_0^{\text{ver}}$
 and $\varepsilon_0^{\text{val}}$ are found to be smaller than 0.1. In other words, convergence is established 
-once the reconstructed field is observed to be accurate within 10$\%$. An overall flow diagram for the two
+once the reconstructed field is observed to be accurate within 10$\%$. 
+The sequence of steps associated with the iterative procedure for building the surrogate model is provided in
+Algorithm~\ref{alg:pcas}. 
+%
+%\begin{spacing}{0.95}
+\begin{breakablealgorithm}
+\renewcommand{\algorithmicrequire}{\textbf{Input:}}
+\renewcommand{\algorithmicensure}{\textbf{Output:}}
+  \caption{Iterative strategy for surrogate modeling using the PCAS method}
+  \begin{algorithmic}[1]
+  \Require Nominal values and intervals for each component of $\bm{\theta}$, Error threshold:~$\tau$
+  \Ensure Optimal number of features: $K^\ast$, $\hat{G}_i^\ast(\bm{\eta})$~($i=1,\ldots,K^\ast$)
+  \Procedure{PCAS Methodology}{} 
+    \State Draw an initial set of $N_0$ samples from the joint pdf $\pi_{\bm{\theta}}$
+    \State Generate FEM realizations of the residual stress field at these $N_0$ samples
+    \State Determine optimal number of components $K^0$ using Algorithm~\ref{alg:pca}
+    \State Discover an active subspace for each feature $\mathcal{Z}_i^0(\bm{\theta})$
+    \State Approximate $\mathcal{Z}_i^0(\bm{\theta})$ with a low-dimensional surrogate $\hat{G}_i^0(\bm{\eta})$ 
+    \State Reconstruct the residual stress field $\hat{\mat{S}}_0$
+    \State Evaluate the errors: $\varepsilon_0^{\text{ver}}$ and $\varepsilon_0^{\text{val}}$ using~\eqref{eq:check}
+    \State \If ($\varepsilon_0^{\text{ver}}<\tau$ AND $\varepsilon_0^{\text{val}}<\tau$)
+    \State $K^\ast=K^0$
+    \State $\hat{G}_i^\ast(\bm{\eta})=\hat{G}_i^0(\bm{\eta})$
+    \EndIf
+  \EndProcedure
+  \end{algorithmic}
+  \label{alg:pcas}
+\end{breakablealgorithm} 
+%\end{spacing}
+
+An overall flow diagram for the two
 step process implemented at each iteration for the input and output dimension reduction is illustrated in
 Figure~\ref{fig:fd}. Once dimension reduction for a given iteration is complete, the field is reconstructed
 using the sequence illustrated in Figure~\ref{fig:re}.
 %
 \begin{figure}[htbp]
 \begin{center}
-\begin{tikzpicture}[node distance=1.2cm,scale=0.5, every node/.style={scale=1.0}]
+\begin{tikzpicture}[node distance=1.2cm,scale=0.5, every node/.style={scale=0.8}]
 
 \node (field) [io, text width=6em] {Field Data\\ $\mat{S}\in\mathbb{R}^N$};
 
@@ -275,7 +306,7 @@ DR: $\mathbb{R}^{\Nt}\rightarrow \mathbb{R}^{N_{\bm{\eta},\max}}$, $N_{\bm{\eta}
 %
 \begin{figure}[htbp]
 \begin{center}
-\begin{tikzpicture}[node distance=1.2cm,scale=0.6, every node/.style={scale=1.0}]
+\begin{tikzpicture}[node distance=1.2cm,scale=0.6, every node/.style={scale=0.8}]
 
 \node (s1) [io, text width=7.5em] {Draw a sample, $\bm{\xi}_k$ from $\pi_\xi$};
 
@@ -298,20 +329,6 @@ DR: $\mathbb{R}^{\Nt}\rightarrow \mathbb{R}^{N_{\bm{\eta},\max}}$, $N_{\bm{\eta}
 \end{figure}
 \bigskip
 
-The sequence of steps associated with the iterative procedure for building the surrogate model is provided in
-Algorithm~\ref{alg:pcas}. 
-%
-\begin{breakablealgorithm}
-\renewcommand{\algorithmicrequire}{\textbf{Input:}}
-\renewcommand{\algorithmicensure}{\textbf{Output:}}
-  \caption{Iterative strategy for surrogate modeling using the PCAS method}
-  \begin{algorithmic}[1]
-	\Procedure{PCAS Methodology}{} 
-%	  \State Consider $N$ available data points in the full space, $(\vec\xi_k,\mathcal{Z}_i(\vec\xi_k))$, $k~=~1,\ldots,N$
-	\EndProcedure
-  \end{algorithmic}
-  \label{alg:pcas}
-\end{breakablealgorithm} 
 %
 
 
