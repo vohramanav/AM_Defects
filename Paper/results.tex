@@ -115,46 +115,48 @@ As discussed earlier in~\ref{sub:as}, each feature can be expressed as a functio
 space. Note that $\bm{\theta}:\{\bm{\theta_P}\cup\bm{\theta_M}\cup\bm{\theta_T}\}$. An active subspace computation
 was performed using a regression-based approach~\cite{Constantine:2015, Vohra:2019}
 for estimating the gradient and the available set of 20 realizations for each $\mathcal{Z}_i$. 
-The eigenvalue spectrum of the matrix, $\hat{\mathbb{C}_i}$ for each $\mathcal{Z}_i$ is shown in Figure~\ref{fig:as}.
+The eigenvalue spectrum of the matrix, $\hat{\mathbb{C}_i}$ for each $\mathcal{Z}_i$ is shown in Figures~\ref{fig:as1}
+and~\ref{fig:as2}.
 The variability of a given $\mathcal{Z}_i$ in terms of the active variables, $\bm{\eta}$ regarded as the sufficient summary
 plot~(SSP) is also included in each case.
 %
 \begin{figure}[htbp]
 \begin{center}
-\begin{subfigure}{0.35\textwidth}
-\includegraphics[width=0.65\textwidth]{./Figures/eig_Zf1} 
+%\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=0.35\textwidth]{./Figures/eig_Zf1} 
+\includegraphics[width=0.35\textwidth]{./Figures/SSP_Zf1} 
 \\
-\includegraphics[width=0.65\textwidth]{./Figures/eig_Zf2} 
+\includegraphics[width=0.35\textwidth]{./Figures/eig_Zf2} 
+\includegraphics[width=0.35\textwidth]{./Figures/SSP_Zf2} 
 \\
-\includegraphics[width=0.65\textwidth]{./Figures/eig_Zf3} 
+\includegraphics[width=0.35\textwidth]{./Figures/eig_Zf3} 
+\includegraphics[width=0.35\textwidth]{./Figures/SSP_Zf3} 
 \\
-\includegraphics[width=0.65\textwidth]{./Figures/eig_Zf4} 
-\\
-\includegraphics[width=0.65\textwidth]{./Figures/eig_Zf5} 
-\\
-\includegraphics[width=0.65\textwidth]{./Figures/eig_Zf6} 
-\\
-\includegraphics[width=0.65\textwidth]{./Figures/eig_Zf7} 
-\end{subfigure}
-\hspace{-0.5cm}
-\begin{subfigure}{0.35\textwidth}
-\includegraphics[width=0.65\textwidth]{./Figures/SSP_Zf1} 
-\\
-\includegraphics[width=0.65\textwidth]{./Figures/SSP_Zf2} 
-\\
-\includegraphics[width=0.65\textwidth]{./Figures/SSP_Zf3} 
-\\
-\includegraphics[width=0.65\textwidth]{./Figures/SSP2D_Zf4} 
-\\
-\includegraphics[width=0.65\textwidth]{./Figures/SSP_Zf5} 
-\\
-\includegraphics[width=0.65\textwidth]{./Figures/SSP_Zf6} 
-\\
-\includegraphics[width=0.65\textwidth]{./Figures/SSP_Zf7} 
-\end{subfigure}
+\includegraphics[width=0.35\textwidth]{./Figures/eig_Zf4} 
+\includegraphics[width=0.35\textwidth]{./Figures/SSP2D_Zf4} 
 \end{center}
-\caption{Eigenvalue spectrum and the corresponding SSP for each $\mathcal{Z}_i$.}
-\label{fig:as}
+\caption{Eigenvalue spectrum~(left) and the corresponding SSP~(right) for $\mathcal{Z}_i, i=1,2,3,4$.
+A straight line fit in the case of $\mathcal{Z}_{1,2,3}$ and a
+2D polynomial surface fit in the case of $\mathcal{Z}_4$ is used as a surrogate model as illustrated.}
+\label{fig:as1}
+\end{figure}
+%
+%
+\begin{figure}[htbp]
+\begin{center}
+%\begin{subfigure}{0.5\textwidth}
+\includegraphics[width=0.35\textwidth]{./Figures/eig_Zf5} 
+\includegraphics[width=0.35\textwidth]{./Figures/SSP_Zf5} 
+\\
+\includegraphics[width=0.35\textwidth]{./Figures/eig_Zf6} 
+\includegraphics[width=0.35\textwidth]{./Figures/SSP_Zf6} 
+\\
+\includegraphics[width=0.35\textwidth]{./Figures/eig_Zf7} 
+\includegraphics[width=0.35\textwidth]{./Figures/SSP_Zf7} 
+\end{center}
+\caption{Eigenvalue spectrum~(left) and the corresponding SSP~(right) for $\mathcal{Z}_i, i=5,6,7$.
+A straight line fit to the SSP is used as a surrogate model as illustrated in each case.}
+\label{fig:as2}
 \end{figure}
 %
 From these plots, it is observed that in all cases except $\mathcal{Z}_4$, a 1-dimensional active
