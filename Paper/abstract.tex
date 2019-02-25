@@ -9,17 +9,19 @@ or directions in  the output field data. A set of representative features corres
 of the high-dimensional output is 
 determined. A map from the set of inputs in the physical space to each feature is considered,
 and the active subspace~(AS) methodology is used to capture their relationship in a low-dimensional subspace in the input 
-domain. The map for each feature of the output is then approximated by a surrogate in the active subspace. Thus, the PCAS
+domain. The map for each feature of the output is then approximated by a surrogate model in the active subspace. Thus, the PCAS
 method aims to accomplish dimension reduction in the input as well as the output by first mapping the set of inputs
 in the physical space to fewer variables in the active subspace~(active variables), and linking these active variables
 to a set of representative features
 that approximate the field of interest. 
-The proposed framework is implemented to build a surrogate for the purpose of reliability analysis
+The surrogate model is constructed in an iterative manner to reduce computational burden
+associated with training using the expensive physics model. 
+The proposed framework is implemented to build a surrogate model for the purpose of reliability analysis
 with respect to residual stress in an additively
-manufactured component. The surrogate is further exploited for detecting 
-stress hotspots in the component, and for global sensitivity analysis to determine the impact of process variables and
-alloy material properties on the development of residual stress. Our findings based on the considered application
-are indicative of enormous potential for computational gains for such analyses. 
+manufactured component. The surrogate model is further exploited for detecting 
+stress hotspots in the component, and for global sensitivity analysis to determine the impact of manufacturing process variables and
+material properties on the development of residual stress. Our findings based on the considered application
+are indicative of enormous potential for computational gains in such analyses. 
 
 \bigskip
 

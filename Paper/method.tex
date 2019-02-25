@@ -4,7 +4,7 @@
 As discussed earlier in Section~\ref{sec:intro}, we aim to construct a surrogate model for mapping the set of inputs to a
 field quantity. In the proposed methodology, we outline a two-step process to accomplish this. The first step involves
 dimension reduction in the output space that involves
-identification of principal directions or components in the data set for the field of interest. These components are used
+identification of principal directions or components in the dataset for the field of interest. These components are used
 to construct a feature vector. Each element in the feature vector is an inner product of the field data and elements
 of a given principal direction. Hence, the number of features is equal to the number of principal directions used to
 reconstruct the field. In the second step, each feature is represented as a function of the inputs and a low-dimensional
@@ -17,13 +17,13 @@ the strategy for computing the feature vector. In~\ref{sub:as}, we provide a bri
 and outline the sequence of steps for surrogate construction for each feature. The overall iterative procedure for
 constructing the surrogate is discussed in~\ref{sub:pcas}.
 
-\subsection{Step 1: Output Dimension Reduction using PCA}
+\subsection{Output Dimension Reduction using PCA}
 \label{sub:pca}
 
 For the purpose of outlining the computational framework, we consider a field,
-$\mat{S}(\bm{\theta})\in\mathbb{R}^{r\times c}$ evaluated on a 2-dimensional mesh of size $r\times c$;
-and $\bm{\theta}$ denotes the set of inputs. Consider that the field data is available at $N_s$ pseudorandom
-samples, drawn from the joint probability density function (pdf) of $\bm{\theta}$. A data matrix $\mat{X}$ is
+$\mat{S}(\bm{\theta})\in\mathbb{R}^{r\times c}$ evaluated on a 2-dimensional mesh of size ($r\times c$)
+for a given set of inputs $\bm{\theta}$. Consider that the field data is available at $N_s$ pseudorandom
+samples, drawn from the joint probability density function (PDF) of $\bm{\theta}$. A data matrix $\mat{X}$ is
 first constructed using the field data at $N_s$ samples. A singular value decomposition of the covariance
 matrix, $\mat{X^\top X}$ is then performed to obtain an orthogonal matrix, $\mat{U}$ whose columns 
 contain eigenvectors or principal directions in the considered data. A matrix, $\mathcal{Z}$ with 
@@ -35,9 +35,9 @@ considering the latter is orthogonal.
 Since most of the information is captured by the dominant eigenvectors, $\mat{S}$ can be re-constructed with a
 reasonable amount of accuracy in a low-dimensional column space of $\mat{U}$. We adopt an iterative
 approach wherein the number of eigenvectors or components of $\mat{U}$ are increased by one at each iteration
-and the accuracy of the reconstructed field, $\hat{\mat S}$ is assessed. Thus, the optimal number of components
-correspond to the reconstruction error~($\varepsilon_\mathcal{R}^\infty$) 
-being smaller than a considered threshold, $\tau$. The sequence of steps
+and the accuracy of the reconstructed field $\hat{\mat S}$ is assessed. Thus, the optimal number of components
+correspond to the reconstruction error~$\varepsilon_\mathcal{R}^\infty$ 
+being smaller than a considered threshold $\tau$. The sequence of steps
 is outlined in Algorithm~\ref{alg:pca}.
 %
 \bigskip
@@ -77,6 +77,7 @@ is outlined in Algorithm~\ref{alg:pca}.
 	                \State $\mat{U}^r = \mat{U}(:,1:K^\ast)$
 			\State break
 		\EndIf
+          \State $K=K+1$
 	\EndLoop
 	\EndProcedure
   \end{algorithmic}
@@ -124,7 +125,7 @@ to the physical space to its corresponding potential parameter, $\theta_k$. The 
 \label{eq:C}
 \ee
 %
-where $dP_\vec\xi$ = $\pi_\vec\xi d\vec\xi$  and $\pi_\vec\xi$ denotes the joint pdf of $\bm{\xi}$. Note that
+where $dP_\vec\xi$ = $\pi_\vec\xi d\vec\xi$  and $\pi_\vec\xi$ denotes the joint PDF of $\bm{\xi}$. Note that
 $\mathcal{Z}_{i}$ is assumed to be differentiable and L$^2$ integrable in $\Omega_\theta$. 
 Since the integral in~\eqref{eq:C}
 is multidimensional, the symmetric and positive semidefinite matrix $\mathbb{C}_i$ is approximated numerically in 
@@ -158,7 +159,7 @@ variables since $\bm{\eta}=\hat{\mat{W}}_1^\top \bm{\xi}\in\mathbb{R}^\Nj$. The 
 are referred to as \textit{active variables}.
 From~\eqref{eq:chat}, it is clear that the computational effort needed to construct $\mathbb{C}_i$ is directly proportional 
 to the number of samples, $N$. A regression-based approach outlined
-in~\cite{Vohra:2019} was used to estimate the gradients of $\mathcal{Z}_{i}$,
+in~\cite{Vohra:2019} is used to estimate the gradients of $\mathcal{Z}_{i}$,
 required to compute the elements of $\mathbb{C}_i$.
 
 \subsubsection{Surrogate in the Active subspace}
@@ -166,13 +167,13 @@ required to compute the elements of $\mathbb{C}_i$.
 
 Significant computational gains are expected in situations where a low-dimensional active subspace captures the
 variability in the output with reasonable accuracy. However, computational gains as a result of dimension reduction
-can be enhanced by approximating the variability~($G(\bm{\eta})$) in the subspace with a surrogate
-model~($\hat{G}(\bm{\eta})$). In situations where the variability is captured using 1-2 dominant eigenvectors in
+can be enhanced by approximating the variability~$G(\bm{\eta})$ in the subspace with a surrogate
+model~$\hat{G}(\bm{\eta})$. In situations where the variability is captured using 1-2 dominant eigenvectors in
 the active subspace, a simple polynomial regression fit is a reasonable choice for the surrogate model. 
 However, for a relatively large dimensional surrogate model, one could
-use a PCE or a GP. It is critical to validate the surrogate for its predictive accuracy. 
+use a PCE or a GP. It is critical to validate the surrogate model for its predictive accuracy. 
 The following algorithm provides a sequence of steps adapted from~\cite{Constantine:2015} to construct a
-surrogate in the active subspace.
+surrogate model in the active subspace.
 %
 \begin{breakablealgorithm}
 \renewcommand{\algorithmicrequire}{\textbf{Input:}}
@@ -195,32 +196,32 @@ surrogate in the active subspace.
 
 \bigskip
 To sum up, an active subspace is computed for each dominant feature, $\mathcal{Z}_i$ and a corresponding
-surrogate fit, $\hat{\mathcal{Z}}_i$ is performed. Therefore, a total of $K^\ast$ surrogates are constructed
+surrogate fit, $\hat{\mathcal{Z}}_i$ is performed. Therefore, a total of $K^\ast$ surrogate models are constructed
 to map the set of inputs $\bm{\theta}$ in the physical space to the field in the output space. 
 Therefore, at the end of the step process, dimension reduction in the output space is 
 $\mathbb{R}^{(r\ast c)}\rightarrow \mathbb{R}^{K^\ast}$, and dimension reduction in the input space
 is $\mathbb{R}^{K^\ast}\rightarrow \mathbb{R}^{N_{\bm{\eta},\max}}$; 
-where $N_{\bm{\eta},\max}$ is the maximum number of active variables, $\bm{\eta}$ required to construct
-a given $\hat{G}_i$, i.e. $\max\limits_j \Nj$. The iterative procedure for constructing the surrogate model is
+where $N_{\bm{\eta},\max}$ corresponds to the surrogate model with the largest dimensionality in $\bm{\eta}$.
+The iterative procedure for constructing the surrogate model is
 discussed in~\ref{sub:pcas}.
 
 \subsection{Iterative Procedure for Surrogate Construction}
 \label{sub:pcas}
 
-As a first step, we construct a cross-validation data set using the FEM
+As a first step, we construct a cross-validation dataset using the FEM
  for testing the accuracy of the surrogate model. 
 An initial set realizations of the residual stress field is generated at $N_0$ samples 
-(drawn from the joint pdf of $\bm{\theta}$) using the FEM. 
+(drawn from the joint PDF of $\bm{\theta}$) using the FEM. 
 The optimal number of components~($K^0$) or representative features~($\mathcal{Z}_i^0$, $i=1,\ldots,K^0$)
 are then determined for
 the initial dataset using Algorithm~\ref{alg:pca}. A map from $\bm{\xi}$ to each feature $\mathcal{Z}_i^0$
-is approximated by a surrogate: $\mathcal{Z}_i^0(\bm{\xi})\approx 
+is approximated by a surrogate model: $\mathcal{Z}_i^0(\bm{\xi})\approx 
 \hat{G}_i(\bm{\eta})$ in the active subspace using
 the methodology presented in~\ref{sub:as}. The residual field is reconstructed using surrogate 
 prediction for each feature $\mathcal{Z}_i^0$. Finally, we compute verification error~($\varepsilon_0^{\text{ver}}$)
 and validation error~($\varepsilon_0^{\text{val}}$)
 for the surrogate model by reconstructing the field at the same set of $N_0$
-samples used for building the surrogate and the samples used for cross-validation respectively. 
+samples used for building the surrogate model and the samples used for cross-validation respectively. 
 The mathematical expression for the two errors is given as
 follows:
 %
@@ -235,7 +236,7 @@ respectively; $\mat{S}_0$ and $\hat{\mat{S}}_0$ denote the stress field simulate
 surrogate model respectively. Note that the subscript `0' indicates that these variables correspond to the initial set
 of computations. 
 A new set of realizations for the residual stress field is generated at each subsequent iteration
-and augmented with the existing data set. The two step process is repeated until both $\varepsilon_0^{\text{ver}}$
+and augmented with the existing dataset. The two step process is repeated until both $\varepsilon_0^{\text{ver}}$
 and $\varepsilon_0^{\text{val}}$ are found to be smaller than 0.1. In other words, convergence is established 
 once the reconstructed field is observed to be accurate within 10$\%$. 
 The sequence of steps associated with the iterative procedure for building the surrogate model is provided in
@@ -248,19 +249,24 @@ Algorithm~\ref{alg:pcas}.
   \caption{Iterative strategy for surrogate modeling using the PCAS method}
   \begin{algorithmic}[1]
   \Require Nominal values and intervals for each component of $\bm{\theta}$, Error threshold:~$\tau$
-  \Ensure Optimal number of features: $K^\ast$, $\hat{G}_i^\ast(\bm{\eta})$~($i=1,\ldots,K^\ast$)
+  \Ensure $K^\ast$, $\hat{G}_i^\ast(\bm{\eta})$~($i=1,\ldots,K^\ast$)
   \Procedure{PCAS Methodology}{} 
-    \State Draw an initial set of $N_0$ samples from the joint pdf $\pi_{\bm{\theta}}$
+    \State Draw an initial set of $N_0$ samples from the joint PDF $\pi_{\bm{\theta}}$
     \State Generate FEM realizations of the residual stress field at these $N_0$ samples
     \State Determine optimal number of components $K^0$ using Algorithm~\ref{alg:pca}
     \State Discover an active subspace for each feature $\mathcal{Z}_i^0(\bm{\theta})$
     \State Approximate $\mathcal{Z}_i^0(\bm{\theta})$ with a low-dimensional surrogate $\hat{G}_i^0(\bm{\eta})$ 
     \State Reconstruct the residual stress field $\hat{\mat{S}}_0$
     \State Evaluate the errors: $\varepsilon_0^{\text{ver}}$ and $\varepsilon_0^{\text{val}}$ using~\eqref{eq:check}
-    \State \If ($\varepsilon_0^{\text{ver}}<\tau$ AND $\varepsilon_0^{\text{val}}<\tau$)
+    \If {($\varepsilon_0^{\text{ver}}<\tau$ AND $\varepsilon_0^{\text{val}}<\tau$)}
     \State $K^\ast=K^0$
     \State $\hat{G}_i^\ast(\bm{\eta})=\hat{G}_i^0(\bm{\eta})$
+    \State Proceed to Step 17
     \EndIf
+    \State Draw a new set of samples $\bm{\theta}^{\text{new}}$ from $\pi_{\bm{\theta}}$ and 
+    perform model evaluations at $\bm{\theta}^{\text{new}}$
+    \State Augment the new dataset with existing dataset for building the surrogate
+    \State Repeat Steps 4--9 and 14--15 until the `if' condition is satisfied
   \EndProcedure
   \end{algorithmic}
   \label{alg:pcas}

@@ -2,11 +2,12 @@
 \label{sec:results}
 
 In this section, we provide relevant details pertaining to the construction of the surrogate model to predict
-the field of interest, i.e. the
-residual stress in the AM part cross-section using the PCAS method in~\ref{sub:surr}. The surrogate is used to map
+the field of interest, i.e. 
+residual stress in a cross-section of an  AM part using the PCAS method in~\ref{sub:surr}. The surrogate model is used to map
 the process control parameters and the material properties to the residual stress field. The computational efficiency
-enabled by the surrogate is exploited to perform a global sensitivity analysis of the inputs in~\ref{sub:gsa}. Finally, the
-surrogate is used for reliability prediction for the AM part by estimating the probability of failure based on residual stress
+enabled by the surrogate model is exploited for identifying stress hotspots in the part in~\ref{sub:hotspot}, and
+to perform a global sensitivity analysis of the inputs in~\ref{sub:gsa}. Finally, the
+surrogate model is used for reliability prediction for the AM part by estimating the probability of failure based on residual stress
 in~\ref{sub:reliability}.
 
 \subsection{Surrogate Model}
@@ -14,13 +15,13 @@ in~\ref{sub:reliability}.
 
 A surrogate model is constructed for the residual stress field at the cross-section of the part 
 (x-z plane in Figure~\ref{fig:PartwMesh}) passing through its center. We will refer to this plane
-as x$^c$-z$^c$ in the remainder of this paper. The surrogate maps three sets of
+as x$^c$-z$^c$ in the remainder of this paper. The surrogate model maps three sets of
 parameters, namely, the process control parameters~($\bm{\theta_P}$), mechanical properties~($\bm{\theta_M}$),
 and thermal properties~($\bm{\theta_T}$) to the stress field. The set of process control parameters includes
-the beam power~($P$), scan speed~($v$), and the pre-heat temperature~($T_0$). Mechanical properties
-include the yield strength~($Y$), the elastic modulus~($E$), and the bulk density~($\rho$). Thermal 
+beam power~($P$), scan speed~($v$), and pre-heat temperature~($T_0$). Mechanical properties
+include yield strength~($Y$), elastic modulus~($E$), and bulk density~($\rho$). Thermal 
 properties include specific heat~($C_p$) and bulk thermal conductivity~($\kappa$). Note that $C_p$ and $\kappa$
-are considered to be functions of the local temperature, $T$. Specifically, a polynomial of degree 2 was fit
+are considered to be functions of the local temperature, $T$. Specifically, a polynomial of degree 2 is fit
 to a set of data pertaining to the variation of $C_p$ and $\kappa$ with temperature (20~K--1655~K), 
 provided in~\cite{Fu:2014} as shown in Figure~\ref{fig:Cp_kappa}.
 %
@@ -30,7 +31,7 @@ provided in~\cite{Fu:2014} as shown in Figure~\ref{fig:Cp_kappa}.
 \includegraphics[width=0.42\textwidth]{./Figures/kappa_fit}
 \end{center}
 \caption{A second degree polynomial fit to specific heat~($C_p$), and thermal conductivity~($\kappa$) data
-for a temperature range, [20,1655](K). Note that the data provided in~\cite{Fu:2014} was used to determine
+for a temperature range, [20,1655](K). Note that the data provided in~\cite{Fu:2014} is used to determine
 the coefficients of the regression fit.}
 \label{fig:Cp_kappa}
 \end{figure}
@@ -51,7 +52,7 @@ the thermal properties are provided in Table~\ref{tab:remain}.
 \toprule
 Scan Speed, $v$~(mm/s) & 500 \\
 Beam Power, $P$~(W) & 160 \\
-Pre-heat Temperature, $T_0$~(C) & 650 \\
+Pre-heat Temperature, $T_0$~($^\circ$C) & 650 \\
 Specific heat, $C_p$ = $C_0+C_1T+C_2T^2$~(J/kg/K) & 540~($C_0$),0.43~($C_1$),$-3.2\times 10^{-5}$~($C_2$) \\
 Thermal Conductivity, $\kappa$ = $D_0+D_1T+D_2T^2$~(W/m/K) & 7.2~($D_0$),0.011~($D_1$),$1.4\times 10^{-6}$~($D_2$) \\
 \bottomrule
@@ -65,11 +66,11 @@ length~(x$^c$) and 14 points along the height~(z$^c$) as highlighted in Figure~\
 As mentioned earlier in Section~\ref{sec:model}, a 
 finer mesh is used near the part surface since sharp thermal gradients lead to a larger amount of stress
 in this region as shown in Figures~\ref{fig:subSmises} and~\ref{fig:RS_comp}.  Following the flow diagram
-in Figure~\ref{fig:fd}, the first step involves a principal component analysis on the field data. 
-Algorithm~\ref{alg:pca}) is used for this purpose. However, the reconstructed field failed
-the verification and the validation tests in this case, i.e. $\varepsilon_0^{\text{ver}}$ and $\varepsilon_0^{\text{val}}$
-were greater than 0.1. A new set of 5 model realizations were added at subsequent iterations and the iterative
-procedure was observed to converge in 2 iterations. Error estimates for each iteration are provided in
+in Figure~\ref{fig:fd}, the first step involves a principal component analysis on the field data using  
+Algorithm~\ref{alg:pca}. However, the reconstructed field in this case is oberved to fail
+the verification and the validation tests, i.e. $\varepsilon_0^{\text{ver}}$ and $\varepsilon_0^{\text{val}}$
+are greater than $\tau=0.1$. A new set of 5 model realizations are added at subsequent iterations and the iterative
+procedure is observed to converge in 2 iterations. Error estimates for each iteration are provided in
 Table~\ref{tab:error}.
 %
 \begin{table}[htbp]
@@ -89,31 +90,33 @@ Iteration &  Sample Size & $\#$ of features & $\varepsilon_i^{\text{ver}}$ & $\v
 
 
 In Figure~\ref{fig:pca}, we plot the reconstruction error, $\varepsilon_\mathcal{R}^\infty$ against the number of
-principal components, $K$. 
+principal components $K$ for the converged case with 20 samples. 
 %
 \begin{figure}[htbp]
 \begin{center}
 \includegraphics[width=0.42\textwidth]{./Figures/error_PCA}
 \end{center}
 \caption{A plot of the reconstruction error, $\varepsilon_\mathcal{R}^\infty$ as a function of the
-number of principal components obtained using the iterative PCA approach in Algorithm~\ref{alg:pca}.}
+number of principal components obtained using the iterative PCA approach in Algorithm~\ref{alg:pca}
+and model realizations at 20 samples.}
 \label{fig:pca}
 \end{figure}
 %
 As expected, $\varepsilon_\mathcal{R}^\infty$ is observed to mostly decrease with the number of components. 
 A monotonic behavior is not expected since the components only capture partial information in the data. It 
 appears that most of the information is captured using 20 components since the error is almost 0. However,
-building the surrogate for 20 features would potentially entail a large computational effort depending upon the
+building the surrogate model for 20 features would potentially entail a large computational effort depending upon the
 application. Here, we consider that $K^\ast$ = 7 components are optimal since the error plateaus as the number of
 components increase from 7 to 10 indicating diminishing returns. Thus, the residual stress field is reconstructed
-using a surrogate for each of these $K^\ast$ components~($\mathcal{Z}_i$'s, $i = 1,2,\ldots,K^\ast$).
+using a surrogate model for each of these $K^\ast$ components~($\mathcal{Z}_i$'s, $i = 1,2,\ldots,K^\ast$).
 The dimensionality of the output space is therefore reduced 
 from $\mathbb{R}^{14\times 32=448}\rightarrow \mathbb{R}^7$. We now shift our focus on dimension reduction
 in the input space.
 
-As discussed earlier in~\ref{sub:as}, each feature can be expressed as a function of $\bm{\theta}$ in the physical
-space. Note that $\bm{\theta}:\{\bm{\theta_P}\cup\bm{\theta_M}\cup\bm{\theta_T}\}$. An active subspace computation
-was performed using a regression-based approach~\cite{Constantine:2015, Vohra:2019}
+As discussed earlier in~\ref{sub:as}, each feature can be expressed as a function of 
+$\bm{\theta}:\{\bm{\theta_P}\cup\bm{\theta_M}\cup\bm{\theta_T}\}$ in the physical
+space. An active subspace computation
+is performed using a regression-based approach~\cite{Constantine:2015, Vohra:2019}
 for estimating the gradient and the available set of 20 realizations for each $\mathcal{Z}_i$. 
 The eigenvalue spectrum of the matrix, $\hat{\mathbb{C}_i}$ for each $\mathcal{Z}_i$ is shown in Figures~\ref{fig:as1}
 and~\ref{fig:as2}.
@@ -160,40 +163,40 @@ A straight line fit to the SSP is used as a surrogate model as illustrated in ea
 \end{figure}
 %
 From these plots, it is observed that in all cases except $\mathcal{Z}_4$, a 1-dimensional active
-subspace captures the variability in the feature with reasonable accuracy. More specifically, the
-eigenvalue spectrum exhibits a significant jump between the first and second eigenvalue. Consistent
-with these observations, a straight-line fit to the realizations of the feature in the SSP is observed to be
-reasonably accurate. In the case of $\mathcal{Z}_4$, $\lambda_1$ and $\lambda_2$ are comparable, and
+subspace captures the variability in the feature with reasonable accuracy. This is expected based on the
+eigenvalue spectrum which exhibits a significant jump between $\lambda_1$ and $\lambda_2$. 
+Therefore, a straight line fit also shown in these plots can be used as a surrogate model for the variability in
+these features. In the case of $\mathcal{Z}_4$, $\lambda_1$ and $\lambda_2$ are observed to be comparable, and
 a significant jump exists between $\lambda_2$ and $\lambda_3$. Therefore, a 2-dimensional active
 subspace is considered in this case as shown. Polynomials of degrees 3 and 2 along $\eta_1$ and
-$\eta_2$ respectively were used to construct the regression surface. The regression-fits in each case
-serves as a surrogate for the corresponding feature, $\mathcal{Z}_i$. Therefore, a sample $\bm{\xi}_i$
-corresponding to $\bm{\theta}_i$ in the physical space is propagated through each surrogate to estimate
+$\eta_2$ respectively are used to construct the regression surface. As mentioned earlier,
+regression-fits in each case
+serves as a surrogate model for the corresponding feature, $\mathcal{Z}_i$. Therefore, a sample $\bm{\xi}_i$
+corresponding to $\bm{\theta}_i$ in the physical space is propagated through each surrogate model to estimate
 $\mathcal{Z}_i$'s and hence, the residual stress field as shown using a flow diagram in Figure~\ref{fig:re}.
-The individual surrogates for $\mathcal{Z}_i$'s thus constitute the overall surrogate model that maps the 
-physical variables to the stress field. We will refer to this overall surrogate model as the \textit{composite
-surrogate} in the remainder of this paper. 
+The individual surrogate models for $\mathcal{Z}_i$'s thus constitute the overall surrogate model that maps the 
+physical variables to the stress field. 
 
-Dimension reduction in the input space is therefore found to be from $\mathbb{R}^7\rightarrow\mathbb{R}^2$.
+Dimension reduction in the input space is thus found to be from $\mathbb{R}^7\rightarrow\mathbb{R}^2$.
 Therefore, using the proposed PCAS method, significant dimension reduction in both input and output
-spaces is accomplished leading enormous gains in computational efficiency for the considered application.
+spaces is accomplished, thereby yielding enormous gains in computational efficiency for the considered application.
 
 \subsubsection{Surrogate Verification and Validation}
 \label{subsub:vnv}
 
-As mentioned earlier in this section, 20 model realizations were needed to obtain a surrogate model with
+As mentioned earlier in this section, 20 model realizations are needed to obtain a surrogate model with
 reasonable accuracy with respect to the reconstructed residual stress field in the x$^c$-z$^c$ plane. 
-Specifically, the verification and validation errors were found to be approximately 0.04 and 
+Specifically, the verification and validation errors are found to be approximately 0.04 and 
 0.07 respectively. In other words, the stress field reconstructed using the
-composite surrogate model achieves an accuracy of about 7$\%$ on average. Although these error estimates
+surrogate model achieves an accuracy of about 7$\%$ on average. Although these error estimates
 are based on a relatively small sample size, they seem reasonable considering that the validation test samples
-were generated using Latin hypercube sampling (LHS) that explores the entire input domain more uniformly
+are generated using Latin hypercube sampling (LHS) that explores the entire input domain more uniformly
 as compared to Monte Carlo sampling. Therefore, the PCAS approach appears to provide a reasonably 
-accurate surrogate coupled with enormous computational gains which makes the analyses pertaining to
+accurate surrogate model coupled with enormous computational gains which makes the analyses pertaining to
 the present application affordable. 
 
 Figure~\ref{fig:RS_comp} illustrates a side-by-side comparison of stress distribution in the $x^c$-z$^c$ plane,
-computed using the FEM~(left) with those generated using the composite surrogate~(right) using the same
+computed using the FEM~(left) with those generated using the surrogate model~(right) using the same
 set of input conditions. The two plots
 are observed to be in close agreement with each other.  
 %
@@ -212,8 +215,8 @@ are observed to be in close agreement with each other.
 \includegraphics[width=1.0\textwidth]{./Figures/recZ_sam13} 
 \end{subfigure}
 \end{center}
-\caption{Left: Residual stress field in the $x^c$-z$^c$ plane as generated using the Abaqus model with inputs, 
-$\bm{\theta}_p$. The grid points in the 2D mesh used for finite element simulations are also highlighted. 
+\caption{Left: Residual stress field in the $x^c$-z$^c$ plane as generated using the 
+finite element model in Abaqus. The grid points in the 2D mesh used in simulations are also highlighted. 
 Right: Reconstructed stress field using the surrogate model using the same set of parameters. }
 
 %: $v=535.23$~mm/s, $P$=148.27~W,
@@ -222,20 +225,20 @@ Right: Reconstructed stress field using the surrogate model using the same set o
 \label{fig:RS_comp}
 \end{figure}
 
-\subsubsection{Hotspot Identification}
-\label{subsub:hotspot}
+\subsection{Hotspot Identification}
+\label{sub:hotspot}
 
 As mentioned earlier in Section~\ref{sec:intro}, a large amount of residual stress severely impacts part
 performance due to sub-optimal mechanical properties, reduced fatigue life, and geometrical inaccuracy. 
 Identification of `stress hotspots' could thus be conceived as an important step in the manufacturing process.
 Owing to the transient nature of the process conditions, material microstructure, and part configuration,
 it would not be practicable to use the FEM. The surrogate model constructed using the PCAS method
-proposed in this work could instead be used for the purpose.
+proposed in this work could instead be used for this purpose.
 
-For the present analysis, we focus on the hotspots in the $x^c$-z$^c$ plane, and any point in the 2D mesh
-where the residual stress exceeds a threshold is considered as the hotspot. Figure~\ref{fig:hs} illustrates the 
-location of the hotspots and associated stress values in the $x^c$-z$^c$ plane, for a particular set of
-input conditions. A threshold value of 640~MPa is used. 
+For the present analysis, any point in the $x^c$-z$^c$ plane
+where the residual stress exceeds a threshold is considered as a hotspot. Figure~\ref{fig:hs} illustrates the 
+location of the hotspots and associated stress values in the $x^c$-z$^c$ plane for a particular set of
+input conditions using a threshold value of 640~MPa. 
 %
 \begin{figure}[htbp]
 \begin{center}
@@ -248,7 +251,7 @@ are indicated by means of a colorbar. The location of the peak stress is also sh
 %
 As expected, the hotspots are located near the top surface of the part that experiences sharp temperature
 gradients. For the purpose of identifying a global hotspot, the residual stress
-field in the $x^c$-z$^c$ plane is simulated for 10$^6$ pseudorandom samples, generating using LHS
+field in the $x^c$-z$^c$ plane is simulated for 10$^6$ pseudorandom samples, generated using LHS
 in the 12-dimensional input domain. Thus, stress distribution is obtained at each point in the mesh. 
 The specific grid point with the maximum mean stress is regarded as the \textit{global hotspot},
 denoted as P. Our findings reveal that P is in fact located at the top right corner of the $x^c$-z$^c$
@@ -267,13 +270,13 @@ Matlab. The distribution is based on 10$^6$ evaluations and the mode value is es
 \subsection{Global Sensitivity Analysis}
 \label{sub:gsa}
 
-The composite surrogate is further used for the purpose of global sensitivity analysis~(GSA). %
+The surrogate model is further used for the purpose of global sensitivity analysis~(GSA). %
 GSA is performed with respect to the stress value at point $P$, identified as the global hotspot
-for residual stress in the $x^c$-z$^c$ plane as discussed earlier in~\ref{subsub:hotspot}. 
+for residual stress in the $x^c$-z$^c$ plane as discussed earlier in~\ref{sub:hotspot}. 
 
-As mentioned earlier, the set of inputs in the physical space, $\bm{\theta}$ is classified into three
+As mentioned earlier, the set of inputs in the physical space denoted by $\bm{\theta}$ is classified into three
 categories: process control parameters~($\bm{\theta_P}$), mechanical properties~($\bm{\theta_M}$), and
-thermal properties~($\bm{\theta_T}$) of the alloy~(Ti6Al4V) used to manufacture the AM part. We focused
+thermal properties~($\bm{\theta_T}$) of the alloy~(Ti6Al4V) used to manufacture the AM part. We focus
 our efforts on determining the relative importance of $\bm{\theta_P}$, $\bm{\theta_M}$, and $\bm{\theta_T}$
 wherein the individual parameters in each category are grouped together. Additionally, we investigate
 relative importance of the process
@@ -284,10 +287,10 @@ manufacturer could focus on optimizing either the mechanical properties, thermal
 the process control variables for minimizing the uncertainty in residual stress prediction. 
 More importantly, optimizing the key contributors to the variability in residual stress would help maximize the reliability
 of the finished product. 
- GSA was performed by estimating the main-effect and the total-effect Sobol' sensitivity
+ GSA is performed by estimating the main-effect and the total-effect Sobol' sensitivity
 indices at 10$^5$ samples in the input domain using an algorithm based on 
-Monte Carlo sampling~(MCS)~\cite{Sobol:2001}. The composite
-surrogate was used to make the computations tractable. The estimated sensitivities for the two cases
+Monte Carlo sampling~(MCS)~\cite{Sobol:2001}. The 
+surrogate model is used to make the computations tractable. The estimated sensitivities for the two cases
 are plotted in Figure~\ref{fig:gsa}.
 %
 \begin{figure}[htbp]
@@ -303,7 +306,9 @@ properties~($\bm{\theta_{M,T}}$).}
 %
 Several inferences can be made: The residual stress at P is most sensitive to the mechanical properties, followed 
 by thermal properties of the alloy. Sensitivity towards the process control parameters is found to be relatively small. 
-However, it must be noted that the interactions between $\bm{\theta_P}$, $\bm{\theta_M}$, and $\bm{\theta_T}$
+Consistent with these findings, the sensitivity towards the material properties grouped together is relatively
+higher as compared to the process variables. 
+However, it must be noted from these plots that the interactions between $\bm{\theta_P}$, $\bm{\theta_M}$, and $\bm{\theta_T}$
 are significantly large. Hence, the total-effect index of $\bm{\theta_P}$ indicates that the sensitivity towards the 
 process variables is substantial. Therefore, optimizing the process parameters for minimizing residual
 stress in the AM part could help improve its performance characteristics. 
@@ -318,7 +323,7 @@ corresponding to a defined failure criterion. Here, we estimate~$p_f$ based on t
 stress estimate at any location in
 the part exceeding a given threshold. In other words, we aim to ensure that the residual stress
 in the part does not exceed an upper bound and therefore, the performance characteristics of
-the AM part are not severely degraded. Once again, we exploit the composite surrogate to
+the AM part are not severely degraded. Once again, we exploit the surrogate model to
 numerically estimate~$p_f$ as follows:
 %
 \be
@@ -328,60 +333,9 @@ numerically estimate~$p_f$ as follows:
 %
 where $\hat{p}_f$ is the approximation to $p_f$, $N$ denotes the number of samples, $S^\ast$
 denotes the limiting stress value, and $\max(\hat{\mat{S}})$ denotes the peak stress in the
-x$^c$-z$^c$ plane based on the surrogate prediction. $\mathbb{H}[]$
+x$^c$-z$^c$ plane based on the surrogate model prediction. $\mathbb{H}[]$
 is a Heaviside unit step function that assumes a value 1 for a positive argument and 0 for
 a negative argument.
-To ensure that $\hat{p}_f$ is a resonable approximation, it is estimated
-using 10$^6$ samples in the input domain. Based on surrogate predictions at the generated set of samples,
+To ensure that $\hat{p}_f$ is a reasonable approximation, it is estimated
+using 10$^6$ samples in the input domain. Based on surrogate model predictions at these samples,
 the probability of failure using $S^\ast$~=~900~MPa is estimated to be 0.177. 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
- 
