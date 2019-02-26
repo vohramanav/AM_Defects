@@ -2,7 +2,7 @@
 \label{sec:method}
 
 As discussed earlier in Section~\ref{sec:intro}, we aim to construct a surrogate model for mapping the set of inputs to a
-field quantity. In the proposed methodology, we outline a two-step process to accomplish this. The first step involves
+field output. In the proposed methodology, we outline a two-step process to accomplish this. The first step involves
 dimension reduction in the output space that involves
 identification of principal directions or components in the dataset for the field of interest. These components are used
 to construct a feature vector. Each element in the feature vector is an inner product of the field data and elements
@@ -14,7 +14,7 @@ To avoid unnecessary computations of the finite element model and thereby enhanc
 the two steps are implemented in an iterative manner as discussed further below. 
 In~\ref{sub:pca}, we outline
 the strategy for computing the feature vector. In~\ref{sub:as}, we provide a brief background on active subspaces
-and outline the sequence of steps for surrogate construction for each feature. The overall iterative procedure for
+and outline the sequence of steps for surrogate construction for each feature. The proposed iterative procedure for
 constructing the surrogate is discussed in~\ref{sub:pcas}.
 
 \subsection{Output Dimension Reduction using PCA}
@@ -37,7 +37,7 @@ reasonable amount of accuracy in a low-dimensional column space of $\mat{U}$. We
 approach wherein the number of eigenvectors or components of $\mat{U}$ are increased by one at each iteration
 and the accuracy of the reconstructed field $\hat{\mat S}$ is assessed. Thus, the optimal number of components
 correspond to the reconstruction error~$\varepsilon_\mathcal{R}^\infty$ 
-being smaller than a considered threshold $\tau$. The sequence of steps
+being smaller than a desired threshold $\tau$. The sequence of steps
 is outlined in Algorithm~\ref{alg:pca}.
 %
 \bigskip
@@ -165,16 +165,18 @@ required to compute the elements of $\mathbb{C}_i$.
 \subsubsection{Surrogate in the Active subspace}
 \label{sub:surr}
 
-Significant computational gains are expected in situations where a low-dimensional active subspace captures the
-variability in the output with reasonable accuracy. However, computational gains as a result of dimension reduction
-can be enhanced by approximating the variability~$G(\bm{\eta})$ in the subspace with a surrogate
-model~$\hat{G}(\bm{\eta})$. In situations where the variability is captured using 1-2 dominant eigenvectors in
-the active subspace, a simple polynomial regression fit is a reasonable choice for the surrogate model. 
-However, for a relatively large dimensional surrogate model, one could
-use a PCE or a GP. It is critical to validate the surrogate model for its predictive accuracy. 
+Dimension reduction in the input space using the active subspace methodology aims to accomplish
+computational gains in two ways: First, representative features of the
+output are expressed in terms of fewer independent variables~(active variables) in the active subspace 
+as $G(\bm{\eta})$. Second, the dependence of individual features on the active variables is approximated 
+using a surrogate model~$\hat{G}(\bm{\eta})$ in the active subspace. For a low-dimensional surrogate
+model (1-2), a polynomial regression fit is often an adequate choice. 
+However, for a relatively large dimensional active subspace, one could
+use a PCE or a GP. It is however critical to assess the surrogate model for its accuracy. 
 The following algorithm provides a sequence of steps adapted from~\cite{Constantine:2015} to construct a
 surrogate model in the active subspace.
 %
+\bigskip
 \begin{breakablealgorithm}
 \renewcommand{\algorithmicrequire}{\textbf{Input:}}
 \renewcommand{\algorithmicensure}{\textbf{Output:}}
@@ -192,9 +194,9 @@ surrogate model in the active subspace.
   \end{algorithmic}
   \label{alg:surr}
 \end{breakablealgorithm} 
+\bigskip
 %
 
-\bigskip
 To sum up, an active subspace is computed for each dominant feature, $\mathcal{Z}_i$ and a corresponding
 surrogate fit, $\hat{\mathcal{Z}}_i$ is performed. Therefore, a total of $K^\ast$ surrogate models are constructed
 to map the set of inputs $\bm{\theta}$ in the physical space to the field in the output space. 
@@ -208,20 +210,21 @@ discussed in~\ref{sub:pcas}.
 \subsection{Iterative Procedure for Surrogate Construction}
 \label{sub:pcas}
 
-As a first step, we construct a cross-validation dataset using the FEM
+As a first step, we construct a cross-validation dataset using the expensive multiphysics model
  for testing the accuracy of the surrogate model. 
-An initial set realizations of the residual stress field is generated at $N_0$ samples 
-(drawn from the joint PDF of $\bm{\theta}$) using the FEM. 
+An initial set realizations of the output field is generated at $N_0$ samples 
+(drawn from the joint PDF of $\bm{\theta}$) using the original model. 
 The optimal number of components~($K^0$) or representative features~($\mathcal{Z}_i^0$, $i=1,\ldots,K^0$)
 are then determined for
 the initial dataset using Algorithm~\ref{alg:pca}. A map from $\bm{\xi}$ to each feature $\mathcal{Z}_i^0$
 is approximated by a surrogate model: $\mathcal{Z}_i^0(\bm{\xi})\approx 
 \hat{G}_i(\bm{\eta})$ in the active subspace using
-the methodology presented in~\ref{sub:as}. The residual field is reconstructed using surrogate 
-prediction for each feature $\mathcal{Z}_i^0$. Finally, we compute verification error~($\varepsilon_0^{\text{ver}}$)
-and validation error~($\varepsilon_0^{\text{val}}$)
-for the surrogate model by reconstructing the field at the same set of $N_0$
-samples used for building the surrogate model and the samples used for cross-validation respectively. 
+the methodology presented in~\ref{sub:as}. The output field is reconstructed using surrogate 
+prediction for each feature $\mathcal{Z}_i^0$. Finally, to assess the accuracy of the resulting 
+surrogate, we estimate the surrogate fitting error~($\varepsilon_0^{\text{ver}}$)
+and cross-validation error~($\varepsilon_0^{\text{val}}$). The output field is reconstructed at 
+the training points to estimate the former and at an independently generated set of realizations of the
+field using the multiphysics model for the latter. 
 The mathematical expression for the two errors is given as
 follows:
 %
@@ -231,8 +234,9 @@ follows:
 \label{eq:check}
 \ee
 %
-where $N_0^{\text{ver}}$ and $N_0^{\text{val}}$ denote the number of samples used for verification and validation
-respectively; $\mat{S}_0$ and $\hat{\mat{S}}_0$ denote the stress field simulated using the FEM and the 
+where $N_0^{\text{ver}}$ and $N_0^{\text{val}}$ denote the number of samples used for estimating the fitting error and the
+cross-validation error
+respectively; $\mat{S}_0$ and $\hat{\mat{S}}_0$ denote the output field simulated using the original model and the 
 surrogate model respectively. Note that the subscript `0' indicates that these variables correspond to the initial set
 of computations. 
 A new set of realizations for the residual stress field is generated at each subsequent iteration
@@ -243,6 +247,7 @@ The sequence of steps associated with the iterative procedure for building the s
 Algorithm~\ref{alg:pcas}. 
 %
 %\begin{spacing}{0.95}
+\bigskip
 \begin{breakablealgorithm}
 \renewcommand{\algorithmicrequire}{\textbf{Input:}}
 \renewcommand{\algorithmicensure}{\textbf{Output:}}
@@ -252,11 +257,11 @@ Algorithm~\ref{alg:pcas}.
   \Ensure $K^\ast$, $\hat{G}_i^\ast(\bm{\eta})$~($i=1,\ldots,K^\ast$)
   \Procedure{PCAS Methodology}{} 
     \State Draw an initial set of $N_0$ samples from the joint PDF $\pi_{\bm{\theta}}$
-    \State Generate FEM realizations of the residual stress field at these $N_0$ samples
+    \State Generate model realizations of the residual stress field at these $N_0$ samples
     \State Determine optimal number of components $K^0$ using Algorithm~\ref{alg:pca}
     \State Discover an active subspace for each feature $\mathcal{Z}_i^0(\bm{\theta})$
     \State Approximate $\mathcal{Z}_i^0(\bm{\theta})$ with a low-dimensional surrogate $\hat{G}_i^0(\bm{\eta})$ 
-    \State Reconstruct the residual stress field $\hat{\mat{S}}_0$
+    \State Reconstruct the output field $\hat{\mat{S}}_0$
     \State Evaluate the errors: $\varepsilon_0^{\text{ver}}$ and $\varepsilon_0^{\text{val}}$ using~\eqref{eq:check}
     \If {($\varepsilon_0^{\text{ver}}<\tau$ AND $\varepsilon_0^{\text{val}}<\tau$)}
     \State $K^\ast=K^0$
@@ -272,6 +277,7 @@ Algorithm~\ref{alg:pcas}.
   \label{alg:pcas}
 \end{breakablealgorithm} 
 %\end{spacing}
+\bigskip
 
 An overall flow diagram for the two
 step process implemented at each iteration for the input and output dimension reduction is illustrated in

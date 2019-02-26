@@ -2,13 +2,13 @@
 \label{sec:results}
 
 In this section, we provide relevant details pertaining to the construction of the surrogate model to predict
-the field of interest, i.e. 
+the field quantity of interest, i.e. 
 residual stress in a cross-section of an  AM part using the PCAS method in~\ref{sub:surr}. The surrogate model is used to map
-the process control parameters and the material properties to the residual stress field. The computational efficiency
+the process parameters and the material properties to the residual stress field. The computational efficiency
 enabled by the surrogate model is exploited for identifying stress hotspots in the part in~\ref{sub:hotspot}, and
 to perform a global sensitivity analysis of the inputs in~\ref{sub:gsa}. Finally, the
-surrogate model is used for reliability prediction for the AM part by estimating the probability of failure based on residual stress
-in~\ref{sub:reliability}.
+surrogate model is used for reliability prediction of the manufactured part by estimating the probability of 
+failure based on residual stress in~\ref{sub:reliability}.
 
 \subsection{Surrogate Model}
 \label{sub:surr}
@@ -16,8 +16,8 @@ in~\ref{sub:reliability}.
 A surrogate model is constructed for the residual stress field at the cross-section of the part 
 (x-z plane in Figure~\ref{fig:PartwMesh}) passing through its center. We will refer to this plane
 as x$^c$-z$^c$ in the remainder of this paper. The surrogate model maps three sets of
-parameters, namely, the process control parameters~($\bm{\theta_P}$), mechanical properties~($\bm{\theta_M}$),
-and thermal properties~($\bm{\theta_T}$) to the stress field. The set of process control parameters includes
+parameters, namely, the process parameters~($\bm{\theta_P}$), mechanical properties~($\bm{\theta_M}$),
+and thermal properties~($\bm{\theta_T}$) to the stress field. The set of processparameters includes
 beam power~($P$), scan speed~($v$), and pre-heat temperature~($T_0$). Mechanical properties
 include yield strength~($Y$), elastic modulus~($E$), and bulk density~($\rho$). Thermal 
 properties include specific heat~($C_p$) and bulk thermal conductivity~($\kappa$). Note that $C_p$ and $\kappa$
@@ -40,12 +40,12 @@ Hence, a total of 12 parameters~($\bm{\theta}$) are mapped to the stress field i
 corresponding to $C_p$ and $\kappa$. A uniform prior: $[0.9\bm{\theta}^\ast, 1.1\bm{\theta}^\ast]$, 
 where $\bm{\theta}^\ast$ denotes a vector of nominal values,
 is considered for each parameter. Nominal values of the mechanical properties: $Y$, $E$, and $\rho$ are provided
-in Table~\ref{tab:matProp}. Nominal values of the process control parameters and temperature coefficients for
+in Table~\ref{tab:matProp}. Nominal values of the process parameters and temperature coefficients for
 the thermal properties are provided in Table~\ref{tab:remain}.
 %
 \begin{table}[htbp]
 \centering
-\caption{EBM process control parameters and temperature coefficients for $C_p$~($C_i$'s) and $\kappa$~($D_i$'s).}
+\caption{EBM process parameters and temperature coefficients for $C_p$~($C_i$'s) and $\kappa$~($D_i$'s).}
 \label{tab:remain}
 \vspace{1mm}
 \begin{tabular}{ ll }
@@ -67,10 +67,10 @@ As mentioned earlier in Section~\ref{sec:model}, a
 finer mesh is used near the part surface since sharp thermal gradients lead to a larger amount of stress
 in this region as shown in Figures~\ref{fig:subSmises} and~\ref{fig:RS_comp}.  Following the flow diagram
 in Figure~\ref{fig:fd}, the first step involves a principal component analysis on the field data using  
-Algorithm~\ref{alg:pca}. However, the reconstructed field in this case is oberved to fail
-the verification and the validation tests, i.e. $\varepsilon_0^{\text{ver}}$ and $\varepsilon_0^{\text{val}}$
-are greater than $\tau=0.1$. A new set of 5 model realizations are added at subsequent iterations and the iterative
-procedure is observed to converge in 2 iterations. Error estimates for each iteration are provided in
+Algorithm~\ref{alg:pca}. However, the reconstructed field in this case results in large fitting and
+cross-validation errors, i.e. $\varepsilon_0^{\text{ver}}$ and $\varepsilon_0^{\text{val}}$
+are greater than $\tau=0.1$. A new set of 5 model realizations are added in each subsequent iteration
+and the iterative procedure is observed to converge in 2 iterations. Error estimates for each iteration are provided in
 Table~\ref{tab:error}.
 %
 \begin{table}[htbp]
@@ -170,7 +170,7 @@ these features. In the case of $\mathcal{Z}_4$, $\lambda_1$ and $\lambda_2$ are 
 a significant jump exists between $\lambda_2$ and $\lambda_3$. Therefore, a 2-dimensional active
 subspace is considered in this case as shown. Polynomials of degrees 3 and 2 along $\eta_1$ and
 $\eta_2$ respectively are used to construct the regression surface. As mentioned earlier,
-regression-fits in each case
+the regression fit in each case
 serves as a surrogate model for the corresponding feature, $\mathcal{Z}_i$. Therefore, a sample $\bm{\xi}_i$
 corresponding to $\bm{\theta}_i$ in the physical space is propagated through each surrogate model to estimate
 $\mathcal{Z}_i$'s and hence, the residual stress field as shown using a flow diagram in Figure~\ref{fig:re}.
@@ -181,12 +181,12 @@ Dimension reduction in the input space is thus found to be from $\mathbb{R}^7\ri
 Therefore, using the proposed PCAS method, significant dimension reduction in both input and output
 spaces is accomplished, thereby yielding enormous gains in computational efficiency for the considered application.
 
-\subsubsection{Surrogate Verification and Validation}
+\subsubsection{Surrogate Assessment}
 \label{subsub:vnv}
 
 As mentioned earlier in this section, 20 model realizations are needed to obtain a surrogate model with
 reasonable accuracy with respect to the reconstructed residual stress field in the x$^c$-z$^c$ plane. 
-Specifically, the verification and validation errors are found to be approximately 0.04 and 
+Specifically, the fitting and cross-validation errors are found to be approximately 0.04 and 
 0.07 respectively. In other words, the stress field reconstructed using the
 surrogate model achieves an accuracy of about 7$\%$ on average. Although these error estimates
 are based on a relatively small sample size, they seem reasonable considering that the validation test samples
@@ -230,12 +230,13 @@ Right: Reconstructed stress field using the surrogate model using the same set o
 
 As mentioned earlier in Section~\ref{sec:intro}, a large amount of residual stress severely impacts part
 performance due to sub-optimal mechanical properties, reduced fatigue life, and geometrical inaccuracy. 
-Identification of `stress hotspots' could thus be conceived as an important step in the manufacturing process.
+Identification of `stress hotspots' is thus an important step in supporting the manufacturing process
+quality control.
 Owing to the transient nature of the process conditions, material microstructure, and part configuration,
 it would not be practicable to use the FEM. The surrogate model constructed using the PCAS method
 proposed in this work could instead be used for this purpose.
 
-For the present analysis, any point in the $x^c$-z$^c$ plane
+For the present analysis, any location in the $x^c$-z$^c$ plane
 where the residual stress exceeds a threshold is considered as a hotspot. Figure~\ref{fig:hs} illustrates the 
 location of the hotspots and associated stress values in the $x^c$-z$^c$ plane for a particular set of
 input conditions using a threshold value of 640~MPa. 
@@ -275,16 +276,16 @@ GSA is performed with respect to the stress value at point $P$, identified as th
 for residual stress in the $x^c$-z$^c$ plane as discussed earlier in~\ref{sub:hotspot}. 
 
 As mentioned earlier, the set of inputs in the physical space denoted by $\bm{\theta}$ is classified into three
-categories: process control parameters~($\bm{\theta_P}$), mechanical properties~($\bm{\theta_M}$), and
+categories: process parameters~($\bm{\theta_P}$), mechanical properties~($\bm{\theta_M}$), and
 thermal properties~($\bm{\theta_T}$) of the alloy~(Ti6Al4V) used to manufacture the AM part. We focus
 our efforts on determining the relative importance of $\bm{\theta_P}$, $\bm{\theta_M}$, and $\bm{\theta_T}$
 wherein the individual parameters in each category are grouped together. Additionally, we investigate
-relative importance of the process
-control parameters and the material properties, i.e. $\bm{\theta_M}$ and $\bm{\theta_T}$ grouped together.
+the relative importance of the process
+parameters and the material properties, i.e. $\bm{\theta_M}$ and $\bm{\theta_T}$ grouped together.
 Such analyses with grouped variables would help focus the manufacturer's attention on the key
 contributors to the variability in residual stress. For instance, depending upon the sensitivity estimates, the
 manufacturer could focus on optimizing either the mechanical properties, thermal properties, or
-the process control variables for minimizing the uncertainty in residual stress prediction. 
+the process variables for minimizing the uncertainty in residual stress prediction. 
 More importantly, optimizing the key contributors to the variability in residual stress would help maximize the reliability
 of the finished product. 
  GSA is performed by estimating the main-effect and the total-effect Sobol' sensitivity
@@ -305,7 +306,7 @@ properties~($\bm{\theta_{M,T}}$).}
 \end{figure}
 %
 Several inferences can be made: The residual stress at P is most sensitive to the mechanical properties, followed 
-by thermal properties of the alloy. Sensitivity towards the process control parameters is found to be relatively small. 
+by thermal properties of the alloy. Sensitivity towards the process parameters is found to be relatively small. 
 Consistent with these findings, the sensitivity towards the material properties grouped together is relatively
 higher as compared to the process variables. 
 However, it must be noted from these plots that the interactions between $\bm{\theta_P}$, $\bm{\theta_M}$, and $\bm{\theta_T}$

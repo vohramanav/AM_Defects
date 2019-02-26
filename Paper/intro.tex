@@ -65,31 +65,31 @@ subspace methodology~\cite{Constantine:2015}. The proposed methodology is
 referred to as the PCAS method in this work as it combines principal components~(PC) with active subspaces~(AS).
 Thus, the proposed methodology aims to \textit{compound} computational gains by constructing a low-dimensional
 relationship between uncertain variables in the input space and representative features in a low-dimensional
-output space. The proposed methodology is applied to a multiphysics problem wherein a
+output space. The PCAS method is applied to a multiphysics problem wherein a
 surrogate is constructed for an expensive thermo-mechanical finite element model~(FEM) for the purpose of reliability
 analysis of a mechanical component fabricated using an additive manufacturing process. Tremendous scope
-for computational gains are observed as the resulting surrogate, constructed using a sparse set of realizations
+for computational gains is observed as the resulting surrogate, constructed using a sparse set of realizations
 of the expensive physics model is shown to reconstruct the field quantity of interest~(residual stress)
-with reasonable accuracy. Our findings motivate the use of the PCAS method for other applications involving
-a high-dimensional input and output.     
+with reasonable accuracy. A generalized framework of the proposed methodology is presented which motivates
+its use for such applications involving a high-dimensional input and output.     
 
-Residual stress develops during the manufacturing process due to the presence of steep thermal gradients as
+Residual stress develops during the additive manufacturing due to the presence of steep thermal gradients as
 well as physical constraints in the part which adversely affect its mechanical properties, geometry, and 
 shape~\cite{Withers:2001,Mercelis:2006,Hofmann:2014}. 
-In fact, residual stress in addition to porosity is one of the main reasons for 
-part failure~\cite{Kim:2018}. The presence of residual stress in an AM part has significantly 
+In fact, residual stress in addition to porosity is one of the concerns in
+additively manufactured~(AM) components~\cite{Kim:2018}, and has significantly 
 inhibited rapid certification as well as standardization of the certification process
 due to post processing involving machining and heat treatment~\cite{Shiomi:2004}.
 Several recent investigations~\cite{Vastola:2016,Hodge:2016,Williams:2018}
 have focused on developing thermo-mechanical
 models to better understand the development of residual stress and optimize the microstructure as well as
-the process control parameters accordingly. However, since the simulations are intensive and models require a 
+the manufacturing process parameters accordingly. However, since simulations are intensive and models require a 
 large amount of calibration data, the progress has so far been limited by the availability
 of computational and experimental resources. Through this study, we aim to demonstrate an effective strategy
 based on surrogate modeling that could accelerate material selection, microstructure design, and
 process control and optimization for controlling the evolution residual stress during additive manufacturing. 
 
-Residual stress in an AM part is computed using a finite element thermo-mechanical model in Abaqus in this work. 
+Residual stress in the part is computed using a finite element thermo-mechanical model in Abaqus in this work. 
 More specifically, the FEM includes a thermal model that simulates the thermal response of the
 part. Part thermal response is then used as an input to a mechanical model that predicts residual stress at the end
 of a cooling phase. For a given set of process conditions and material properties, the thermal model requires
@@ -99,21 +99,24 @@ using the FEM requires approximately 30 minutes. In order to perform reliability
 sampling techniques, $\mathcal{O}(10^4-10^5)$ realizations are typically required for reasonable accuracy.  
 Therefore, it is not practical
 to rely on the FEM for this purpose. Additionally, conventional approaches for surrogate
-modeling would require a large amount of computational resources for the purpose of training as discussed earlier.
- A random field approximation is a possibility for
-output dimension reduction. However, such an approximation could potentially introduce large errors in the  
-representation of the non-stationary output field. Instead, we aim to exploit the structure in the output data 
+modeling would require a large amount of computational resources for the purpose of training as mentioned earlier.
+ A parametric random field description is a possibility for
+output dimension reduction by representing the output with a small number of parameters. 
+However, such an approximation could be difficult and erroneous for a non-stationary
+output field. Instead, we aim to exploit the structure in the output data 
 by identifying important 
 directions or principal components in the field. This approach allows us to select an optimal number of 
 features required to re-construct the field with reasonable accuracy and computational effort. 
 
 The main highlights of this paper are as follows: (1) A computationally efficient approach is developed
-for constructing a surrogate model for problems where both input and output are high-dimensional.
+for constructing a surrogate model for problems where both input and output are high-dimensional using
+sparse training data.
 In particular, the output is a field quantity. 
-(2) A finite element model is developed to simulate residual stress in an additively manufactured part
-at the end of a single scan of the laser beam in an EBM process. (3) The surrogate model is used to perform a global
-sensitivity analysis~(GSA) to assess relative importance of the material properties and the process control parameters
-in the context of residual stress. (4) Finally, the surrogate model is used for the purpose of reliability analysis by estimating the
+(2) Thermo-mechanical finite element modeling is pursued to simulate residual stress distribution
+in an additively manufactured part.
+ (3) The surrogate model is used to perform a global
+sensitivity analysis~(GSA) to assess the relative importance of the material properties and manufacturing process parameters.
+(4) Finally, the surrogate model is used for the purpose of reliability analysis by estimating the
 probability that residual stress in the part exceeds a certain threshold.
 
 The remainder of this paper is organized as follows: Section~\ref{sec:method} outlines the proposed methodology for

@@ -1,4 +1,4 @@
-\section{Electron Beam Melting: Finite Element Model}
+\section{Electron Beam Melting: Multiphysics Model}
 \label{sec:model}
 
 Electron beam melting (EBM) is an additive manufacturing process of fusing powder particles, layer-upon-layer, 
@@ -8,7 +8,8 @@ melting. For the application problem in this study, we focus on the thermo-mecha
 produced by the EBM process. For this purpose, we have developed a finite element-based thermal analysis
 model to simulate the thermal response of the part and a finite element-based mechanical model that uses
 the part's thermal
-response to estimate the residual stress in the part at the end of the cooling phase. In this study, the two models are
+response to estimate the residual stress in the part at the end of the cooling phase. Note that the stress is computed
+at the end of a single pass of the electron beam. In this study, the two models are
 weakly coupled i.e. the temperature history of the part is used as an input heat load for the mechanical model. 
 Finite element analysis is performed using Abaqus~\cite{Hibbitt:2001}, a commercially available software. 
 
@@ -94,8 +95,9 @@ microns respectively. The powder is pre-heated to a temperature, $T_0$ prior to 
 boundary conditions at the lateral sides as well as the bottom of the part. Heat transfer in the part occurs by two
 mechanisms: First, by means of thermal conduction due to temperature gradients especially along the depth (x-z plane),
 and second, by means of radiative losses from the exposed surface of the part denoted as $Q_r$ in~\eqref{eq_thermal}.
-The radiative heat flux, $Q_r$ is modeled using the Stefan-Boltzmann law i.e., $Q_r=\sigma\epsilon(T^4-T_a^4)$, where
-$\sigma$, $\epsilon$, and $T_a$ denote the Stefan-Boltzmann constant, emissivity of the top surface, and the ambient
+The radiative heat flux, $Q_r$ is modeled using the Stefan-Boltzmann law i.e., 
+$Q_r=\sigma_\text{SB}\epsilon(T^4-T_a^4)$, where
+$\sigma_\text{SB}$, $\epsilon$, and $T_a$ denote the Stefan-Boltzmann constant, emissivity of the top surface, and the ambient
 temperature respectively. Note that convective losses are not considered since the manufacturing process is 
 assumed to be
 carried out in vacuum. As discussed later in Section~\ref{sec:results}, the beam power~($P$), scan speed~($v$), and 
@@ -118,20 +120,31 @@ tensor ($\mat{\sigma}$) is proportional to the total strain~($\epsilon^T$). Mate
 proportionality constant. The constitutive relationship is given as follows:
 %
 \be
-\mat{\sigma} = \mat{C}\epsilon^T
+\mat{\sigma} = \mat{C}\epsilon^e
 \ee
 %
-where $\epsilon^T = \epsilon^e + \epsilon^p+ \epsilon^t$; $\epsilon^e$, $\epsilon^p$, and $\epsilon^t$ denote elastic, 
-plastic, and thermal strains respectively. The plastic strain is modeled by considering elastic 
+where $\mat{C}$ is the fourth-order material stiffness tensor and $\epsilon^e$ denotes
+the elastic strain. The total strain 
+$\epsilon^T$ can be decomposed as follows:
+%
+\be
+\epsilon^T = \epsilon^e + \epsilon^p+ \epsilon^t
+\ee
+%
+where $\epsilon^p$, and $\epsilon^t$ denote
+plastic and thermal strains respectively~\cite{Megahed:2016}. 
+The plastic strain is modeled by considering elastic 
 perfectly-plastic~\cite{Zhao:2015} condition in the model. Thermal strain is calculated  from the thermal expansion 
-constitutive relationship: $\varepsilon^T = \alpha_{t}\Delta T$, where $\alpha_t $ is the thermal expansion coefficient.
+constitutive relationship: $\varepsilon^t = \alpha_{t}\Delta T$, where $\alpha_t $ is the thermal expansion coefficient.
 The boundary surfaces in the X-direction and Y-direction are constrained in the x-
 coordinates and y-coordinates respectively. The bottom surface is considered fixed in all coordinates.
-Temperature history at each node, obtained using the thermal model in~\ref{sub:thermal}, is used to
-compute the strain tensor, $\sigma$. Hence, the mechanical model is dependent on the thermal response
-of the part but not vice versa. The coupling between the two model is therefore regarded as \textit{one-way}
-or \textit{weak}~\cite{Debroy:2017}. Weak coupling between the models is essentially considered due to the fact
-that a strong coupling would be computationally expensive. The von Mises stress at the end of the cooling process
+The temperature history at each node, obtained using the thermal model in~\ref{sub:thermal}, is used to
+compute the strain tensor, $\sigma$. Hence, the mechanical response is dependent on the thermal response
+of the part but not vice versa. The coupling between the two models is therefore regarded as \textit{one-way}
+or \textit{weak}~\cite{Debroy:2017} (A \textit{strong} or \textit{two-way} coupling assumption is computationally
+unaffordable, since it requires multiple back-and-forth iterations between the two models for convergence, at 
+each time step). 
+The von Mises stress at the end of the cooling process
 is considered as the residual stress in the AM part~\cite{Vastola:2016}. 
 It is considered as the quantity of interest~(QoI) in our analysis for 
 demonstrating the methodology proposed earlier in Section~\ref{sec:method}. The stress contours are illustrated
@@ -151,11 +164,12 @@ values near the top surface and diminishes quickly along the depth of the part. 
 strain due to the applied heat flux is the dominant contributor to the residual stress in the present set-up. 
 
 Simulations are performed on a workstation with a system configuration: Intel~Core~i7-4790~CPU, 
-3.60 GHz with 16GB RAM. It is observed that on average the thermal model takes 20 minutes to complete 
-a run, and the
-mechanical model takes 10 minutes. Note, however, that the simulation duration depends on the choice of
-values for the set of inputs.  
-
+3.60 GHz with 16GB RAM. It is observed that on average the thermal model takes 20 minutes, and the
+mechanical model takes 10 minutes to complete the simulation pertaining to a single pass of the
+electron beam. Note, however, that the simulation duration depends on the choice of
+values for the set of inputs. Moreover, a weak coupling assumption leads to a computational time of 30
+minutes to generate 1 training point for the surrogate model. On the other hand, a strong coupling assumption 
+would lead to 150 minutes considering 5 iterations are needed for convergence to generate 1 training point. 
 
 
 
